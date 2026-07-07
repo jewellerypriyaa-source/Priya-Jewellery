@@ -1,0 +1,518 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────
+   PRIYA JEWELLERY — Design System
+   Color Palette: Gold + Maroon + Blush + Cream
+   ────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* Brand Colors */
+  --color-gold-50: #fdf8ec;
+  --color-gold-100: #f9edcc;
+  --color-gold-200: #f2d98a;
+  --color-gold-300: #e6c97a;
+  --color-gold-400: #d4aa50;
+  --color-gold-500: #c9a84c;
+  --color-gold-600: #a07830;
+  --color-gold-700: #7a5a1e;
+  --color-gold-800: #5a3f10;
+  --color-gold-900: #3a2808;
+
+  --color-maroon-50: #fdf2f4;
+  --color-maroon-100: #fce4e8;
+  --color-maroon-200: #f8cad2;
+  --color-maroon-300: #f2a3b0;
+  --color-maroon-400: #e87080;
+  --color-maroon-500: #8b2035;
+  --color-maroon-600: #6b1a2a;
+  --color-maroon-700: #4f1220;
+  --color-maroon-800: #3d0b15;
+  --color-maroon-900: #1a0008;
+
+  --color-blush-50: #fdf5f6;
+  --color-blush-100: #fadadd;
+  --color-blush-200: #f5c8cc;
+  --color-blush-300: #eec5c9;
+  --color-blush-400: #e5a5ab;
+  --color-blush-500: #d4818a;
+
+  --color-cream-50: #fefcf8;
+  --color-cream-100: #fbf6f0;
+  --color-cream-200: #f5ede0;
+  --color-cream-300: #ede0cc;
+  --color-cream-400: #e0ccb0;
+
+  /* Typography */
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-soft: 0 2px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.08);
+  --shadow-gold: 0 4px 24px rgba(201, 168, 76, 0.25);
+}
+
+/* ── Base Styles ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #fbf6f0;
+  color: #1a0a0e;
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ──────────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5ede0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c9a84c;
+  border-radius: 3px;
+}
+
+/* ── Utility Classes ─────────────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+}
+
+.font-sans {
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
+}
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #c9a84c, #e6c97a, #a07830);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animations ──────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(201, 168, 76, 0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f5ede0 25%, #fdf8ec 50%, #f5ede0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Product Card ─────────────────────────────────────────────── */
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-image {
+  transition: transform 0.5s ease;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #c9a84c, #e6c97a);
+  color: #3a2808;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4);
+}
+
+.btn-maroon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #6b1a2a;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-maroon:hover {
+  background: #8b2035;
+  transform: translateY(-1px);
+}
+
+.btn-outline-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: #c9a84c;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: 2px solid #c9a84c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-gold:hover {
+  background: #c9a84c;
+  color: #3a2808;
+}
+
+/* ── Section Headers ─────────────────────────────────────────── */
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  color: #3d0b15;
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  color: #6b4a52;
+  font-size: 1.05rem;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 1rem 0 2rem;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  flex: 1;
+  max-width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #c9a84c);
+}
+
+.section-divider::after {
+  background: linear-gradient(to left, transparent, #c9a84c);
+}
+
+.section-divider span {
+  color: #c9a84c;
+  font-size: 1.1rem;
+}
+
+/* ── Badges ──────────────────────────────────────────────────── */
+.badge-new {
+  background: linear-gradient(135deg, #c9a84c, #e6c97a);
+  color: #3a2808;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-bestseller {
+  background: #6b1a2a;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-sold-out {
+  background: #4b5563;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-low-stock {
+  background: #d97706;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Glass Effect ─────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+/* ── Input Styles ─────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e0ccb0;
+  border-radius: 8px;
+  background: white;
+  color: #1a0a0e;
+  font-family: var(--font-sans), "Inter", system-ui, sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: #c9a84c;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+}
+
+/* ── Admin Sidebar ────────────────────────────────────────────── */
+.admin-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  background: #1a0a0e;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+/* ── Star Rating ─────────────────────────────────────────────── */
+.star {
+  color: #c9a84c;
+}
+
+.star-empty {
+  color: #e0ccb0;
+}
+
+/* ── WhatsApp FAB ─────────────────────────────────────────────── */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  animation: pulse-gold 3s infinite;
+}
+
+.whatsapp-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 32px rgba(37, 211, 102, 0.6);
+}
+
+/* ── Countdown Timer ─────────────────────────────────────────── */
+.countdown-digit {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  min-width: 48px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* ── Image Zoom ───────────────────────────────────────────────── */
+.image-zoom-container {
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.image-zoom-container img {
+  transition: transform 0.4s ease;
+}
+
+.image-zoom-container:hover img {
+  transform: scale(1.15);
+}
+
+/* ── Mobile Responsive Helpers ────────────────────────────────── */
+@media (max-width: 768px) {
+  .whatsapp-fab {
+    bottom: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* ── Loading Skeleton ─────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f5ede0 25%, #fdf8ec 50%, #f5ede0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 8px;
+}
+
+/* ── Rich Text Content ────────────────────────────────────────── */
+.rich-text h2 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 0.5rem;
+  color: #3d0b15;
+}
+
+.rich-text p {
+  margin-bottom: 1rem;
+  color: #4a2535;
+}
+
+.rich-text ul,
+.rich-text ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.rich-text li {
+  margin-bottom: 0.4rem;
+}
+
+.rich-text strong {
+  color: #3d0b15;
+}
