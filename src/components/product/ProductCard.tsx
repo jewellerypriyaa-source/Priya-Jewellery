@@ -76,12 +76,13 @@ export default function ProductCard({ product, onAnalyticsClick }: ProductCardPr
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               />
             ) : (
-              <div
-                className="w-full h-full flex items-center justify-center text-4xl"
-                style={{ background: "linear-gradient(135deg, #f5ede0, #fadadd)" }}
-              >
-                💍
-              </div>
+              <Image
+                src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600&q=80"
+                alt={product.name}
+                fill
+                className="product-image object-cover"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              />
             )}
 
             {/* Sold Out Overlay */}

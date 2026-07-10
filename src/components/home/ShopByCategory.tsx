@@ -51,15 +51,19 @@ export default function ShopByCategory({ categories }: ShopByCategoryProps) {
                   sizes="112px"
                 />
               ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center text-2xl"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #f5ede0, #fadadd)",
-                  }}
-                >
-                  💍
-                </div>
+                <Image
+                  src={
+                    cat.slug === "earrings"
+                      ? "https://images.unsplash.com/photo-1573408301185-9519f94815b1?w=400&q=80"
+                      : cat.slug === "bridal-sets"
+                      ? "https://images.unsplash.com/photo-1610047803562-7260ebe516c5?w=400&q=80"
+                      : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80"
+                  }
+                  alt={cat.name}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  sizes="112px"
+                />
               )}
 
               {/* Gold ring on hover */}
