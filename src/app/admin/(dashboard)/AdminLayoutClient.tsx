@@ -33,10 +33,10 @@ export default function AdminLayoutClient({
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg text-gray-400 hover:text-white focus:outline-none transition-colors"
+          className="p-2.5 rounded-xl text-[#e6c97a] bg-[#3d0b15]/40 hover:bg-[#3d0b15]/80 border border-[#c9a84c]/20 focus:outline-none transition-colors"
           aria-label="Toggle menu"
         >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          {sidebarOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
