@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import { Toaster } from "react-hot-toast";
+import AdminLayoutClient from "./AdminLayoutClient";
 
 export default async function AdminLayout({
   children,
@@ -14,12 +13,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#f8f4f0" }}>
-      <Toaster position="top-right" />
-      <AdminSidebar adminName={session.user.name ?? "Admin"} />
-      <main className="flex-1 overflow-x-hidden p-6 lg:p-8">
-        {children}
-      </main>
-    </div>
+    <AdminLayoutClient adminName={session.user.name ?? "Admin"}>
+      {children}
+    </AdminLayoutClient>
   );
 }
