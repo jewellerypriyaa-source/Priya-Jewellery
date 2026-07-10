@@ -76,10 +76,10 @@ interface FooterProps {
 }
 
 export default function Footer({
-  storeName = "Priya Jewellery",
+  storeName = "Priyaa Jewellery",
   phone = "+91 7367997766",
   email = "priyajewellery@gmail.com",
-  address = "Priya Jewellery Store, Main Market",
+  address = "Priyaa Jewellery Store, Main Market",
   businessHours = "Mon–Sat: 10am – 7pm",
   instagramUrl = "#",
   facebookUrl = "#",

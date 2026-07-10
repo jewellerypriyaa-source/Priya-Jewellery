@@ -8,7 +8,7 @@
 const DEFAULT_WA_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "917367997766";
 
-const DEFAULT_TEMPLATE = `Hi Priya Jewellery! I am interested in:
+const DEFAULT_TEMPLATE = `Hi Priyaa Jewellery! I am interested in:
 🛍️ {product_name}
 💰 Rs.{price}
 📏 {variant}
@@ -67,7 +67,7 @@ export function buildWishlistUrl(
     )
     .join("\n");
 
-  const message = `Hi Priya Jewellery! I'm interested in ordering these items from my wishlist:\n\n${lines}\n\nCould you please confirm availability and delivery details?`;
+  const message = `Hi Priyaa Jewellery! I'm interested in ordering these items from my wishlist:\n\n${lines}\n\nCould you please confirm availability and delivery details?`;
 
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 }
@@ -80,7 +80,7 @@ export function buildNotifyUrl(
   productUrl: string,
   waNumber: string = DEFAULT_WA_NUMBER
 ): string {
-  const message = `Hi Priya Jewellery! I'd like to be notified when "${productName}" is back in stock.\n🔗 ${productUrl}`;
+  const message = `Hi Priyaa Jewellery! I'd like to be notified when "${productName}" is back in stock.\n🔗 ${productUrl}`;
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 }
 

@@ -25,7 +25,7 @@ export default function ShopByCategory({ categories }: ShopByCategoryProps) {
         <p>Find the perfect piece for every occasion</p>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 md:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 justify-center">
         {categories.map((cat, i) => (
           <Link
             key={cat.id}

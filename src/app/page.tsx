@@ -13,11 +13,11 @@ import SaleCountdown from "@/components/home/SaleCountdown";
 import InstagramGallery from "@/components/home/InstagramGallery";
 
 export const metadata: Metadata = {
-  title: "Priya Jewellery — Handcrafted Fine Jewellery",
+  title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
   description:
     "Discover beautiful handcrafted jewellery — necklaces, earrings, bangles, rings, chokers and bridal sets. Order easily on WhatsApp. Free shipping on orders above ₹1499.",
   openGraph: {
-    title: "Priya Jewellery — Handcrafted Fine Jewellery",
+    title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
     description:
       "Beautiful handcrafted jewellery. Order on WhatsApp — we reply within minutes!",
   },

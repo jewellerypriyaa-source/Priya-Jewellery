@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
             className="font-serif text-2xl font-bold mb-1"
             style={{ color: "#6b1a2a" }}
           >
-            Priya Jewellery
+            Priyaa Jewellery
           </div>
           <div
             className="text-xs tracking-[0.3em] uppercase"
@@ -91,7 +91,8 @@ export default function AdminLoginPage() {
                 placeholder="admin@priyajewellery.com"
                 required
                 autoComplete="email"
-                className="input-field pl-9"
+                className="input-field"
+                style={{ paddingLeft: "2.5rem" }}
               />
             </div>
           </div>
@@ -117,7 +118,8 @@ export default function AdminLoginPage() {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className="input-field pl-9"
+                className="input-field"
+                style={{ paddingLeft: "2.5rem" }}
               />
             </div>
           </div>

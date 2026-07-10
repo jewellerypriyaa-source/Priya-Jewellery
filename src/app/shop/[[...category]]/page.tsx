@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (cat) {
       return {
         title: cat.metaTitle ?? `${cat.name} Jewellery`,
-        description: cat.metaDesc ?? cat.description ?? `Shop ${cat.name} at Priya Jewellery.`,
+        description: cat.metaDesc ?? cat.description ?? `Shop ${cat.name} at Priyaa Jewellery.`,
       };
     }
   }

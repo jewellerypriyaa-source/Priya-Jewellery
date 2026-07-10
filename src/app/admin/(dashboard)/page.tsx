@@ -121,7 +121,7 @@ export default async function AdminDashboardPage() {
           Dashboard
         </h1>
         <p className="text-gray-500 text-sm mt-1">
-          Welcome back! Here's what's happening with Priya Jewellery.
+          Welcome back! Here's what's happening with Priyaa Jewellery.
         </p>
       </div>
 
