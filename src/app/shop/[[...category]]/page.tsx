@@ -16,6 +16,7 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { category } = await params;
   const categorySlug = Array.isArray(category) ? category[0] : category;
 
   if (categorySlug) {
