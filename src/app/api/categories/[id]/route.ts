@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// PUT /api/categories/[id] — Update a category
+// PUT /api/categories/[id] — Update a category (admin only)
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     const body = await req.json();
@@ -30,11 +37,17 @@ export async function PUT(
   }
 }
 
-// DELETE /api/categories/[id] — Delete a category
+// DELETE /api/categories/[id] — Delete a category (admin only)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     await prisma.category.delete({ where: { id } });

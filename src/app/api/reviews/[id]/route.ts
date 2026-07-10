@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// PUT /api/reviews/[id] — Moderate a review (APPROVED/REJECTED)
+// PUT /api/reviews/[id] — Moderate a review (APPROVED/REJECTED) — admin only
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     const { status } = await req.json();
@@ -26,11 +33,17 @@ export async function PUT(
   }
 }
 
-// DELETE /api/reviews/[id] — Delete a review
+// DELETE /api/reviews/[id] — Delete a review — admin only
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     await prisma.review.delete({ where: { id } });

@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveFile } from "@/lib/storage";
+import { auth } from "@/lib/auth";
 
-// POST /api/upload — Upload an image or video file
+// POST /api/upload — Upload an image or video file (admin only)
 export async function POST(req: NextRequest) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -41,6 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    // saveFile now uploads to Supabase Storage and returns the public CDN URL
     const saved = await saveFile(buffer, file.name, folder);
 
     return NextResponse.json({ url: saved.url, filename: saved.filename });

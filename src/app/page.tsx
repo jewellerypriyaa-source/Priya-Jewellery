@@ -1,5 +1,8 @@
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
+
+// Always fetch live data from Supabase — never serve a stale build-time snapshot
+export const dynamic = "force-dynamic";
 import HeroBanner from "@/components/home/HeroBanner";
 import ShopByCategory from "@/components/home/ShopByCategory";
 import ProductGrid from "@/components/home/ProductGrid";

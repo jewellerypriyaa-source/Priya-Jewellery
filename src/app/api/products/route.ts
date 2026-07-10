@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// GET /api/products — List with filters
+// GET /api/products — List with filters (public)
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const category = searchParams.get("category");
@@ -12,10 +14,12 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get("page") ?? "1");
   const limit = parseInt(searchParams.get("limit") ?? "12");
   const skip = (page - 1) * limit;
+  // Admin flag: fetch all including unpublished
+  const all = searchParams.get("all") === "true";
 
   try {
     const where = {
-      isPublished: true,
+      ...(all ? {} : { isPublished: true }),
       ...(category && { category: { slug: category } }),
       ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
       ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
@@ -44,6 +48,8 @@ export async function GET(req: NextRequest) {
           price: true,
           mrp: true,
           stockStatus: true,
+          stockQty: true,
+          isPublished: true,
           isBestseller: true,
           isNewArrival: true,
           category: { select: { name: true, slug: true } },
@@ -61,6 +67,7 @@ export async function GET(req: NextRequest) {
       products: products.map((p) => ({
         ...p,
         categoryName: p.category.name,
+        imageUrl: p.images[0]?.url ?? null,
         images: p.images,
       })),
       total,
@@ -75,6 +82,12 @@ export async function GET(req: NextRequest) {
 
 // POST /api/products — Create a new product (admin only)
 export async function POST(req: NextRequest) {
+  // ── Auth guard ────────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const {
@@ -94,28 +107,66 @@ export async function POST(req: NextRequest) {
       isFeatured,
       metaTitle,
       metaDesc,
+      images = [],   // [{ url, isPrimary, altText?, displayOrder? }]
+      variants = [], // [{ name, value, priceDelta, stockQty }]
     } = body;
+
+    if (!name || !slug || !categoryId || price === undefined) {
+      return NextResponse.json(
+        { error: "name, slug, categoryId and price are required" },
+        { status: 400 }
+      );
+    }
 
     const product = await prisma.product.create({
       data: {
         name,
         slug,
-        sku,
+        sku: sku || null,
         categoryId,
         price: parseFloat(price),
         mrp: mrp ? parseFloat(mrp) : null,
-        shortDesc,
-        description,
+        shortDesc: shortDesc || null,
+        description: description || null,
         stockQty: parseInt(stockQty ?? "0"),
         stockStatus: stockStatus ?? "IN_STOCK",
         isPublished: !!isPublished,
         isBestseller: !!isBestseller,
         isNewArrival: isNewArrival !== false,
         isFeatured: !!isFeatured,
-        metaTitle,
-        metaDesc,
+        metaTitle: metaTitle || null,
+        metaDesc: metaDesc || null,
+
+        // ── Save images to ProductImage table ──────────────────────────────
+        images: {
+          create: images.map((img: any, idx: number) => ({
+            url: img.url,
+            altText: img.altText ?? null,
+            isPrimary: !!img.isPrimary,
+            displayOrder: img.displayOrder ?? idx,
+          })),
+        },
+
+        // ── Save variants to ProductVariant table ──────────────────────────
+        variants: {
+          create: variants.map((v: any) => ({
+            name: v.name,
+            value: v.value,
+            priceDelta: parseFloat(v.priceDelta ?? "0"),
+            stockQty: parseInt(v.stockQty ?? "0"),
+            isActive: true,
+          })),
+        },
+      },
+      include: {
+        images: true,
+        variants: true,
       },
     });
+
+    // Revalidate public pages so they show the new product immediately
+    revalidatePath("/");
+    revalidatePath("/shop");
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {

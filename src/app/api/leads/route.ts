@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// POST /api/leads — Save a newsletter opt-in lead
+// POST /api/leads — Save a newsletter opt-in lead (public — customer facing)
 export async function POST(req: NextRequest) {
   try {
     const { name, phone } = await req.json();
@@ -20,8 +21,14 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET /api/leads — List all leads (admin)
+// GET /api/leads — List all leads (admin only — contains customer phone numbers)
 export async function GET() {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const leads = await prisma.lead.findMany({
       orderBy: { createdAt: "desc" },

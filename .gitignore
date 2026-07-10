@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — NEVER commit real credentials
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,7 +41,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# databases
+# databases — leftover SQLite dev files
 *.db
 *.db-journal
 
+# Auto-generated Prisma client — regenerated on deploy via `prisma generate`
+# NOTE: prisma/schema.prisma and prisma/migrations/ ARE tracked intentionally
+/src/generated/
+
+# Local file uploads — uploads now go to Supabase Storage, not local disk
+/public/uploads/

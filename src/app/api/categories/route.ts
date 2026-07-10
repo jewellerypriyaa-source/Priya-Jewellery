@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// GET /api/categories — List all categories
+// GET /api/categories — List all categories (public)
 export async function GET(req: NextRequest) {
   try {
     const categories = await prisma.category.findMany({
@@ -14,8 +15,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/categories — Create a category
+// POST /api/categories — Create a category (admin only)
 export async function POST(req: NextRequest) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { name, slug, description, imageUrl, displayOrder, isActive } = body;

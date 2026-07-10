@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import prisma from "@/lib/prisma";
+
+// Always read live settings from Supabase — no stale cached announcement bar / WhatsApp number
+export const dynamic = "force-dynamic";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";

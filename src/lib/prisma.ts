@@ -3,18 +3,17 @@
  * Prevents multiple PrismaClient instances in Next.js dev mode hot-reloads
  */
 import { PrismaClient } from "@/generated/prisma";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
-
-const databaseUrl =
-  process.env.DATABASE_URL ?? `file:${path.join(process.cwd(), "dev.db")}`;
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 export const prisma =
   globalForPrisma.prisma ||
   (() => {
-    const adapter = new PrismaBetterSqlite3({ url: databaseUrl });
+    const connectionString = process.env.DATABASE_URL;
+    const pool = new pg.Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
     return new PrismaClient({ adapter } as unknown as ConstructorParameters<typeof PrismaClient>[0]);
   })();
 

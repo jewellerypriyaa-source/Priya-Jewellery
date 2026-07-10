@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { deleteFile } from "@/lib/storage";
 
-// GET /api/homepage — Fetch all homepage items
+// GET /api/homepage — Fetch all homepage items (public)
 export async function GET(req: NextRequest) {
   try {
     const [heroBanners, budgetRanges, instagramPosts, trustBadges, testimonials] =
@@ -26,8 +29,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/homepage — Modify homepage items
+// POST /api/homepage — Modify homepage items (admin only)
 export async function POST(req: NextRequest) {
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { action, payload } = body;
@@ -52,10 +61,18 @@ export async function POST(req: NextRequest) {
             isActive: payload.isActive !== false,
           },
         });
+        revalidatePath("/");
         return NextResponse.json({ item });
       }
       case "delete_hero": {
+        // Fetch image URL before deleting so we can remove from Storage
+        const banner = await prisma.heroBanner.findUnique({
+          where: { id: payload.id },
+          select: { imageUrl: true },
+        });
         await prisma.heroBanner.delete({ where: { id: payload.id } });
+        if (banner?.imageUrl) await deleteFile(banner.imageUrl);
+        revalidatePath("/");
         return NextResponse.json({ success: true });
       }
 
@@ -72,10 +89,12 @@ export async function POST(req: NextRequest) {
             isActive: payload.isActive !== false,
           },
         });
+        revalidatePath("/");
         return NextResponse.json({ item });
       }
       case "delete_budget": {
         await prisma.budgetRange.delete({ where: { id: payload.id } });
+        revalidatePath("/");
         return NextResponse.json({ success: true });
       }
 
@@ -92,10 +111,17 @@ export async function POST(req: NextRequest) {
             isActive: payload.isActive !== false,
           },
         });
+        revalidatePath("/");
         return NextResponse.json({ item });
       }
       case "delete_instagram": {
+        const post = await prisma.instagramPost.findUnique({
+          where: { id: payload.id },
+          select: { imageUrl: true },
+        });
         await prisma.instagramPost.delete({ where: { id: payload.id } });
+        if (post?.imageUrl) await deleteFile(post.imageUrl);
+        revalidatePath("/");
         return NextResponse.json({ success: true });
       }
 
@@ -111,10 +137,12 @@ export async function POST(req: NextRequest) {
             isActive: payload.isActive !== false,
           },
         });
+        revalidatePath("/");
         return NextResponse.json({ item });
       }
       case "delete_badge": {
         await prisma.trustBadge.delete({ where: { id: payload.id } });
+        revalidatePath("/");
         return NextResponse.json({ success: true });
       }
 
@@ -132,10 +160,12 @@ export async function POST(req: NextRequest) {
             isActive: payload.isActive !== false,
           },
         });
+        revalidatePath("/");
         return NextResponse.json({ item });
       }
       case "delete_testimonial": {
         await prisma.testimonial.delete({ where: { id: payload.id } });
+        revalidatePath("/");
         return NextResponse.json({ success: true });
       }
 
