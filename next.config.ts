@@ -2,12 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Allow images from Unsplash (used in seed data) and local uploads
     remotePatterns: [
+      // Supabase Storage — product images CDN
+      {
+        protocol: "https",
+        hostname: "qrwdwcmfevcgafnhrujd.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Unsplash (used in seed data)
       {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      // Cloudinary (kept for compatibility)
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
