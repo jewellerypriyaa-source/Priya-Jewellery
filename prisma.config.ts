@@ -6,7 +6,7 @@ export default defineConfig({
   datasource: {
     url: env("DATABASE_URL"),
     directUrl: env("DIRECT_URL"),
-  },
+  } as any,
   migrations: {
     path: "prisma/migrations",
     seed: "ts-node --esm prisma/seed.ts",
