@@ -16,10 +16,10 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { category } = await params;
+  const categorySlug = Array.isArray(category) ? category[0] : category;
 
-  if (category) {
-    const cat = await prisma.category.findUnique({ where: { slug: category } });
+  if (categorySlug) {
+    const cat = await prisma.category.findUnique({ where: { slug: categorySlug } });
     if (cat) {
       return {
         title: cat.metaTitle ?? `${cat.name} Jewellery`,
@@ -38,10 +38,13 @@ export default async function ShopPage({ params, searchParams }: PageProps) {
   const { category } = await params;
   const sp = await searchParams;
 
+  // Handle Next.js catch-all params which evaluate to arrays (e.g., ['earrings'])
+  const categorySlug = Array.isArray(category) ? category[0] : category;
+
   // Fetch category info if browsing by category
-  const categoryInfo = category
+  const categoryInfo = categorySlug
     ? await prisma.category.findUnique({
-        where: { slug: category },
+        where: { slug: categorySlug },
         select: { id: true, name: true, slug: true, description: true, imageUrl: true },
       })
     : null;
@@ -57,7 +60,7 @@ export default async function ShopPage({ params, searchParams }: PageProps) {
     <div className="min-h-screen" style={{ background: "#fbf6f0" }}>
       <Suspense>
         <ShopPageClient
-          categorySlug={category}
+          categorySlug={categorySlug}
           categoryInfo={categoryInfo}
           allCategories={allCategories}
           initialSearchParams={sp}
