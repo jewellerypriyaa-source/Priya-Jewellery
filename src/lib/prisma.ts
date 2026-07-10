@@ -2,7 +2,7 @@
  * Prisma Client Singleton
  * Prevents multiple PrismaClient instances in Next.js dev mode hot-reloads
  */
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "../generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 
