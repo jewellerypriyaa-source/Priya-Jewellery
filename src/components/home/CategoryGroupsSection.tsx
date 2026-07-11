@@ -302,27 +302,14 @@ function GroupRow({ group, products }: { group: string; products: ProductItem[] 
   );
 }
 
-export default function CategoryGroupsSection({ groups }: CategoryGroupsSectionProps) {
-  // Defined order always
-  const ORDER = [
-    "Gold Plated",
-    "Anti Tarnish",
-    "American Diamond",
-    "Polki Kundan",
-    "Bridal",
-    "German Silver",
-    "Oxidised",
-  ];
-
-  const groupMap = Object.fromEntries(groups.map((g) => [g.group, g.products]));
-
+export default function CategoryGroupsSection({ groups = [] }: CategoryGroupsSectionProps) {
   return (
     <div className="divide-y divide-gray-100">
-      {ORDER.map((groupName) => (
+      {groups.map((g) => (
         <GroupRow
-          key={groupName}
-          group={groupName}
-          products={groupMap[groupName] ?? []}
+          key={g.group}
+          group={g.group}
+          products={g.products}
         />
       ))}
     </div>

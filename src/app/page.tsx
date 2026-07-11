@@ -46,6 +46,7 @@ async function getHomepageData() {
       settings,
       // Fetch all published products with their category (which has a group)
       allGroupProducts,
+      activeCategories,
     ] = await Promise.all([
       prisma.heroBanner.findMany({
         where: { isActive: true },
@@ -79,13 +80,12 @@ async function getHomepageData() {
         take: 9,
       }),
       prisma.settings.findUnique({ where: { id: "main" } }),
-      // Fetch up to 8 products per group
+      // Fetch all published products with active category
       prisma.product.findMany({
         where: {
           isPublished: true,
           category: {
             isActive: true,
-            name: { in: JEWELLERY_GROUPS },
           },
         },
         orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
@@ -93,6 +93,11 @@ async function getHomepageData() {
           images: { where: { isPrimary: true }, take: 1 },
           category: { select: { name: true } },
         },
+      }),
+      // Fetch active categories to display on the homepage in correct displayOrder
+      prisma.category.findMany({
+        where: { isActive: true },
+        orderBy: { displayOrder: "asc" },
       }),
     ]);
 
@@ -104,10 +109,10 @@ async function getHomepageData() {
       if (groupedMap[grp].length < 8) groupedMap[grp].push(p);
     }
 
-    // Build the groups array in the defined order
-    const categoryGroups = JEWELLERY_GROUPS.map((groupName) => ({
-      group: groupName,
-      products: (groupedMap[groupName] ?? []).map((p) => ({
+    // Build the groups array in the activeCategories order
+    const categoryGroups = activeCategories.map((cat) => ({
+      group: cat.name,
+      products: (groupedMap[cat.name] ?? []).map((p) => ({
         id: p.id,
         name: p.name,
         slug: p.slug,
