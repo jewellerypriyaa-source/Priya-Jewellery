@@ -173,7 +173,7 @@ export default function Header({
                       {categories.map((cat) => (
                         <li key={cat.id}>
                           <Link
-                            href={`/shop/${cat.slug}`}
+                            href={`/shop?group=${encodeURIComponent(cat.name)}`}
                             className="text-sm text-gray-700 hover:text-maroon-600 hover:pl-1 transition-all block"
                           >
                             {cat.name}
@@ -365,7 +365,7 @@ export default function Header({
             {categories.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/shop/${cat.slug}`}
+                href={`/shop?group=${encodeURIComponent(cat.name)}`}
                 className="block py-1.5 text-sm text-gray-700 hover:text-maroon-600"
                 onClick={() => setMobileMenuOpen(false)}
               >
