@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Edit, Trash2, Eye, EyeOff, Star, Plus } from "lucide-react";
@@ -45,6 +45,11 @@ export default function ProductsTableClient({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
