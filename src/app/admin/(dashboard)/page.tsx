@@ -2,6 +2,9 @@ import prisma from "@/lib/prisma";
 import { Package, Tags, Star, Users, MousePointer, Eye, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
+
 async function getDashboardStats() {
   const [
     totalProducts,
