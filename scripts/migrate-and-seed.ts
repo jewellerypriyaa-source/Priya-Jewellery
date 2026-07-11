@@ -126,6 +126,10 @@ async function main() {
     { name: "Mangal Sutra Set", slug: "ad-mangal-sutra",   group: "American Diamond", displayOrder: 5  },
     { name: "Earrings Set",     slug: "ad-earrings",       group: "American Diamond", displayOrder: 6  },
     { name: "Mang Tika",        slug: "mang-tika",         group: "American Diamond", displayOrder: 7  },
+    { name: "Polki Kundan",     slug: "polki-kundan",      group: "Polki Kundan",     displayOrder: 1  },
+    { name: "Bridal Sets",      slug: "bridal-sets",       group: "Bridal",           displayOrder: 1  },
+    { name: "German Silver",    slug: "german-silver",     group: "German Silver",    displayOrder: 1  },
+    { name: "Oxidised Jewellery",slug: "oxidised",         group: "Oxidised",         displayOrder: 1  },
   ];
 
   const categories = await Promise.all(
@@ -168,10 +172,13 @@ async function main() {
   const banglesGPCatId = catBySlug["bangles"].id;
   const adBanglesCatId = catBySlug["ad-bangles"].id;
 
+  const catIdsWithProducts = new Set<string>();
+
   for (const productData of productsData) {
     const { imageUrl, ...rest } = productData;
     const product = await prisma.product.create({ data: rest });
     await prisma.productImage.create({ data: { productId: product.id, url: imageUrl, altText: product.name, isPrimary: true, displayOrder: 0 } });
+    catIdsWithProducts.add(product.categoryId);
 
     if (product.categoryId === ringsCatId || product.categoryId === adRingsCatId) {
       await prisma.productVariant.createMany({ data: [5,6,7,8].map(s => ({ productId: product.id, name: "Ring Size", value: String(s), priceDelta: 0 })) });
@@ -180,7 +187,45 @@ async function main() {
       await prisma.productVariant.createMany({ data: ["2/2","2/4","2/6","2/8"].map(s => ({ productId: product.id, name: "Bangle Size", value: s, priceDelta: 0 })) });
     }
   }
-  console.log(`✅ ${productsData.length} products created`);
+
+  // Generate mock products for any category that doesn't have one
+  let mockCount = 0;
+  for (const category of categories) {
+    if (!catIdsWithProducts.has(category.id)) {
+      const mockProduct = await prisma.product.create({
+        data: {
+          name: `${category.name} Elegance`,
+          slug: `mock-${category.slug}-elegance`,
+          categoryId: category.id,
+          price: 999 + Math.floor(Math.random() * 1000),
+          mrp: 2499,
+          stockQty: 10,
+          stockStatus: "IN_STOCK",
+          isPublished: true,
+          isBestseller: Math.random() > 0.5,
+          isNewArrival: true,
+          isFeatured: false,
+          shortDesc: `Beautiful ${category.name} for everyday wear.`,
+          description: `<p>High quality mock product for ${category.name}.</p>`
+        }
+      });
+      
+      const mockImage = Object.values(JEWELLERY_IMAGES)[Math.floor(Math.random() * 10)];
+      
+      await prisma.productImage.create({
+        data: {
+          productId: mockProduct.id,
+          url: mockImage,
+          altText: mockProduct.name,
+          isPrimary: true,
+          displayOrder: 0
+        }
+      });
+      mockCount++;
+    }
+  }
+
+  console.log(`✅ ${productsData.length + mockCount} products created (${mockCount} mocks)`);
 
   // Hero Banners
   await prisma.heroBanner.createMany({ data: [
