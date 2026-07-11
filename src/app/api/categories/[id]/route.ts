@@ -16,7 +16,7 @@ export async function PUT(
   const { id } = await params;
   try {
     const body = await req.json();
-    const { name, slug, description, imageUrl, displayOrder, isActive } = body;
+    const { name, slug, description, imageUrl, displayOrder, isActive, group } = body;
 
     const category = await prisma.category.update({
       where: { id },
@@ -25,6 +25,7 @@ export async function PUT(
         slug,
         description,
         imageUrl,
+        group: group !== undefined ? (group || null) : undefined,
         displayOrder: displayOrder !== undefined ? parseInt(displayOrder) : undefined,
         isActive: isActive !== undefined ? !!isActive : undefined,
       },

@@ -5,7 +5,7 @@
  *
  * Seeds the database with:
  * - 1 admin user
- * - 6 categories
+ * - 24 categories across 3 jewellery groups
  * - 12 sample products
  * - Site settings
  * - Hero banners
@@ -16,13 +16,9 @@
  */
 
 import { PrismaClient } from "../src/generated/prisma/index.js";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import bcrypt from "bcryptjs";
-import path from "path";
 
-const dbPath = `file:${path.join(process.cwd(), "dev.db")}`;
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
-const prisma = new PrismaClient({ adapter } as unknown as ConstructorParameters<typeof PrismaClient>[0]);
+const prisma = new PrismaClient();
 
 // Unsplash jewellery images (free to use, no key needed for direct URLs)
 const JEWELLERY_IMAGES = {
@@ -46,18 +42,6 @@ const JEWELLERY_IMAGES = {
     "https://images.unsplash.com/photo-1610047803562-7260ebe516c5?w=600&q=80",
   pendant1:
     "https://images.unsplash.com/photo-1616530940355-351fabd9524b?w=600&q=80",
-  cat_necklace:
-    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80",
-  cat_earring:
-    "https://images.unsplash.com/photo-1573408301185-9519f94815b1?w=400&q=80",
-  cat_bangle:
-    "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&q=80",
-  cat_ring:
-    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=80",
-  cat_choker:
-    "https://images.unsplash.com/photo-1630019852942-f89202989a59?w=400&q=80",
-  cat_bridal:
-    "https://images.unsplash.com/photo-1610047803562-7260ebe516c5?w=400&q=80",
   hero1:
     "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1400&q=80",
   hero2:
@@ -122,80 +106,61 @@ async function main() {
   console.log("✅ Settings upserted");
 
   // ── Categories ──────────────────────────────────────────────────────
-  const categories = await Promise.all([
-    prisma.category.create({
-      data: {
-        name: "Necklaces",
-        slug: "necklaces",
-        description:
-          "Elegant gold and silver necklaces for every occasion. From delicate chains to statement pieces.",
-        imageUrl: JEWELLERY_IMAGES.cat_necklace,
-        displayOrder: 1,
-        metaTitle: "Gold & Silver Necklaces | Priya Jewellery",
-        metaDesc:
-          "Shop beautiful necklaces at Priya Jewellery. Free shipping on orders above Rs.1499.",
-      },
-    }),
-    prisma.category.create({
-      data: {
-        name: "Earrings",
-        slug: "earrings",
-        description:
-          "Stunning earrings from simple studs to elaborate jhumkas and chandbalis.",
-        imageUrl: JEWELLERY_IMAGES.cat_earring,
-        displayOrder: 2,
-        metaTitle: "Earrings — Jhumkas, Studs & More | Priya Jewellery",
-        metaDesc:
-          "Explore our earring collection — traditional and modern designs for every style.",
-      },
-    }),
-    prisma.category.create({
-      data: {
-        name: "Bangles",
-        slug: "bangles",
-        description:
-          "Traditional and modern bangles in gold-plated brass, silver, and more.",
-        imageUrl: JEWELLERY_IMAGES.cat_bangle,
-        displayOrder: 3,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        name: "Rings",
-        slug: "rings",
-        description:
-          "Statement rings and everyday bands — gold, silver, and gemstone options.",
-        imageUrl: JEWELLERY_IMAGES.cat_ring,
-        displayOrder: 4,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        name: "Chokers",
-        slug: "chokers",
-        description:
-          "Trendy choker necklaces — velvet, gold-plated, and beaded styles.",
-        imageUrl: JEWELLERY_IMAGES.cat_choker,
-        displayOrder: 5,
-      },
-    }),
-    prisma.category.create({
-      data: {
-        name: "Bridal Sets",
-        slug: "bridal-sets",
-        description:
-          "Complete bridal jewellery sets — necklace, earrings, bangles, and maang tikka.",
-        imageUrl: JEWELLERY_IMAGES.cat_bridal,
-        displayOrder: 6,
-        metaTitle: "Bridal Jewellery Sets | Priya Jewellery",
-        metaDesc:
-          "Stunning bridal jewellery sets for your special day. Shop full sets with matching pieces.",
-      },
-    }),
-  ]);
+  // Group 1: Gold Plated (1.5 gram Gold) — 16 subcategories
+  // Group 2: Anti Tarnish — 1 placeholder (subcategories to be added later)
+  // Group 3: American Diamond — 7 subcategories
 
-  const [catNecklace, catEarrings, catBangles, catRings, catChokers, catBridal] =
-    categories;
+  const categoryDefs = [
+    // ── Gold Plated ──────────────────────────────────────────────────
+    { name: "Mangal Sutra",    slug: "mangal-sutra",    group: "Gold Plated",     displayOrder: 1  },
+    { name: "Sankhan and Pola",slug: "sankhan-and-pola",group: "Gold Plated",     displayOrder: 2  },
+    { name: "Pearl & Shell",   slug: "pearl-and-shell", group: "Gold Plated",     displayOrder: 3  },
+    { name: "Chains",          slug: "chains",          group: "Gold Plated",     displayOrder: 4  },
+    { name: "Chura",           slug: "chura",           group: "Gold Plated",     displayOrder: 5  },
+    { name: "Earrings",        slug: "earrings",        group: "Gold Plated",     displayOrder: 6  },
+    { name: "Tie Chains",      slug: "tie-chains",      group: "Gold Plated",     displayOrder: 7  },
+    { name: "Pendants",        slug: "pendants",        group: "Gold Plated",     displayOrder: 8  },
+    { name: "Bangles",         slug: "bangles",         group: "Gold Plated",     displayOrder: 9  },
+    { name: "Necklace",        slug: "necklace",        group: "Gold Plated",     displayOrder: 10 },
+    { name: "Chokers",         slug: "chokers",         group: "Gold Plated",     displayOrder: 11 },
+    { name: "Sitahar",         slug: "sitahar",         group: "Gold Plated",     displayOrder: 12 },
+    { name: "Tiara and Tikli", slug: "tiara-and-tikli", group: "Gold Plated",     displayOrder: 13 },
+    { name: "Lahari",          slug: "lahari",          group: "Gold Plated",     displayOrder: 14 },
+    { name: "Rings",           slug: "rings",           group: "Gold Plated",     displayOrder: 15 },
+    { name: "Gents Kada",      slug: "gents-kada",      group: "Gold Plated",     displayOrder: 16 },
+
+    // ── Anti Tarnish ─────────────────────────────────────────────────
+    { name: "Anti Tarnish",    slug: "anti-tarnish",    group: "Anti Tarnish",    displayOrder: 1  },
+
+    // ── American Diamond ─────────────────────────────────────────────
+    { name: "Finger Ring",     slug: "ad-finger-ring",  group: "American Diamond",displayOrder: 1  },
+    { name: "Necklace Set",    slug: "ad-necklace",     group: "American Diamond",displayOrder: 2  },
+    { name: "Bangles Set",     slug: "ad-bangles",      group: "American Diamond",displayOrder: 3  },
+    { name: "Bracelet",        slug: "bracelet",        group: "American Diamond",displayOrder: 4  },
+    { name: "Mangal Sutra Set",slug: "ad-mangal-sutra", group: "American Diamond",displayOrder: 5  },
+    { name: "Earrings Set",    slug: "ad-earrings",     group: "American Diamond",displayOrder: 6  },
+    { name: "Mang Tika",       slug: "mang-tika",       group: "American Diamond",displayOrder: 7  },
+  ];
+
+  const categories = await Promise.all(
+    categoryDefs.map((cat) =>
+      prisma.category.create({
+        data: {
+          name: cat.name,
+          slug: cat.slug,
+          group: cat.group,
+          displayOrder: cat.displayOrder,
+          description: `${cat.group} — ${cat.name} collection at Priyaa Jewellery.`,
+          metaTitle: `${cat.name} | ${cat.group} | Priyaa Jewellery`,
+          metaDesc: `Shop ${cat.name} from our ${cat.group} collection. Quality jewellery at great prices.`,
+          isActive: true,
+        },
+      })
+    )
+  );
+
+  // Lookup helper: catBySlug["earrings"] → category object
+  const catBySlug = Object.fromEntries(categories.map((c) => [c.slug, c]));
   console.log(`✅ ${categories.length} categories created`);
 
   // ── Products ────────────────────────────────────────────────────────
@@ -203,13 +168,13 @@ async function main() {
     {
       name: "Royal Kundan Necklace",
       slug: "royal-kundan-necklace",
-      categoryId: catNecklace.id,
+      categoryId: catBySlug["necklace"].id,
       price: 2499,
       mrp: 3199,
       shortDesc:
         "Exquisite Kundan necklace with meenakari work, perfect for weddings and festive occasions.",
       description:
-        "<p>This stunning Kundan necklace features hand-set Kundan stones with intricate meenakari enamel work on the reverse. Gold-plated brass base, lightweight and comfortable to wear. Pairs beautifully with traditional attire.</p><p><strong>Materials:</strong> Gold-plated brass, Kundan stones, meenakari enamel</p>",
+        "<p>This stunning Kundan necklace features hand-set Kundan stones with intricate meenakari enamel work on the reverse. Gold-plated brass base, lightweight and comfortable to wear.</p>",
       stockQty: 8,
       stockStatus: "IN_STOCK",
       isPublished: true,
@@ -224,7 +189,7 @@ async function main() {
     {
       name: "Delicate Pearl Chain",
       slug: "delicate-pearl-chain",
-      categoryId: catNecklace.id,
+      categoryId: catBySlug["pearl-and-shell"].id,
       price: 899,
       mrp: 1199,
       shortDesc:
@@ -242,13 +207,13 @@ async function main() {
     {
       name: "Oxidised Silver Jhumkas",
       slug: "oxidised-silver-jhumkas",
-      categoryId: catEarrings.id,
+      categoryId: catBySlug["earrings"].id,
       price: 649,
       mrp: 849,
       shortDesc:
         "Classic oxidised silver jhumkas with intricate floral detailing — a wardrobe staple.",
       description:
-        "<p>These beautiful oxidised silver jhumkas feature detailed floral motifs and a traditional bell drop. Lightweight and comfortable for all-day wear.</p><p><strong>Size:</strong> 5cm drop | <strong>Metal:</strong> Oxidised brass</p>",
+        "<p>These beautiful oxidised silver jhumkas feature detailed floral motifs and a traditional bell drop. Lightweight and comfortable for all-day wear.</p>",
       stockQty: 20,
       stockStatus: "IN_STOCK",
       isPublished: true,
@@ -260,7 +225,7 @@ async function main() {
     {
       name: "Gold Chandbali Earrings",
       slug: "gold-chandbali-earrings",
-      categoryId: catEarrings.id,
+      categoryId: catBySlug["earrings"].id,
       price: 1299,
       mrp: 1599,
       shortDesc:
@@ -278,13 +243,13 @@ async function main() {
     {
       name: "Gold Plated Bangle Set",
       slug: "gold-plated-bangle-set",
-      categoryId: catBangles.id,
+      categoryId: catBySlug["bangles"].id,
       price: 799,
       mrp: 999,
       shortDesc:
         "Set of 6 thin gold-plated bangles — elegant, stackable, and always in style.",
       description:
-        "<p>A set of 6 thin gold-plated bangles with a smooth finish. Perfect for stacking or wearing as a set. Comes in standard sizes.</p>",
+        "<p>A set of 6 thin gold-plated bangles with a smooth finish. Perfect for stacking or wearing as a set.</p>",
       stockQty: 30,
       stockStatus: "IN_STOCK",
       isPublished: true,
@@ -296,7 +261,7 @@ async function main() {
     {
       name: "Diamond-Cut Solitaire Ring",
       slug: "diamond-cut-solitaire-ring",
-      categoryId: catRings.id,
+      categoryId: catBySlug["rings"].id,
       price: 1499,
       mrp: 1999,
       shortDesc:
@@ -314,7 +279,7 @@ async function main() {
     {
       name: "Floral Statement Ring",
       slug: "floral-statement-ring",
-      categoryId: catRings.id,
+      categoryId: catBySlug["rings"].id,
       price: 549,
       mrp: null,
       shortDesc:
@@ -330,15 +295,15 @@ async function main() {
       imageUrl: JEWELLERY_IMAGES.ring2,
     },
     {
-      name: "Velvet Choker Necklace",
-      slug: "velvet-choker-necklace",
-      categoryId: catChokers.id,
+      name: "Gold Plated Choker",
+      slug: "gold-plated-choker",
+      categoryId: catBySlug["chokers"].id,
       price: 449,
       mrp: 599,
       shortDesc:
-        "Trendy black velvet choker with gold charm pendant — minimal, modern, gorgeous.",
+        "Trendy gold-plated choker — minimal, modern, gorgeous.",
       description:
-        "<p>A classic black velvet choker necklace with a delicate gold charm pendant. Adjustable tie at the back for a perfect fit.</p>",
+        "<p>A classic gold-plated choker necklace with delicate chain detailing. Adjustable clasp for a perfect fit.</p>",
       stockQty: 25,
       stockStatus: "IN_STOCK",
       isPublished: true,
@@ -348,15 +313,15 @@ async function main() {
       imageUrl: JEWELLERY_IMAGES.choker1,
     },
     {
-      name: "Complete Bridal Jewellery Set",
-      slug: "complete-bridal-jewellery-set",
-      categoryId: catBridal.id,
+      name: "Bridal Mangal Sutra Set",
+      slug: "bridal-mangal-sutra-set",
+      categoryId: catBySlug["mangal-sutra"].id,
       price: 8999,
       mrp: 12000,
       shortDesc:
-        "Full bridal set — necklace, earrings, maang tikka, and bracelet in gold-polished antique finish.",
+        "Full bridal mangal sutra set — gold-plated with black beads in antique finish.",
       description:
-        "<p>A complete bridal jewellery set that includes:</p><ul><li>Heavy kundan necklace with 2-layer design</li><li>Matching jhumka earrings</li><li>Maang tikka with pearl drop</li><li>Gold-plated bracelet</li></ul><p>Available in gold, silver, and antique gold finish.</p>",
+        "<p>A complete bridal mangal sutra set featuring intricate gold-plated pendants with black bead chains. Available in gold and antique finish.</p>",
       stockQty: 3,
       stockStatus: "LOW_STOCK",
       isPublished: true,
@@ -366,9 +331,9 @@ async function main() {
       imageUrl: JEWELLERY_IMAGES.bridal1,
     },
     {
-      name: "Gold Pendant Necklace",
-      slug: "gold-pendant-necklace",
-      categoryId: catNecklace.id,
+      name: "Gold Pendant Set",
+      slug: "gold-pendant-set",
+      categoryId: catBySlug["pendants"].id,
       price: 1199,
       mrp: 1499,
       shortDesc:
@@ -386,7 +351,7 @@ async function main() {
     {
       name: "Traditional Temple Earrings",
       slug: "traditional-temple-earrings",
-      categoryId: catEarrings.id,
+      categoryId: catBySlug["earrings"].id,
       price: 1599,
       mrp: 2099,
       shortDesc:
@@ -402,15 +367,15 @@ async function main() {
       imageUrl: JEWELLERY_IMAGES.earring1,
     },
     {
-      name: "Rose Gold Hoop Set",
-      slug: "rose-gold-hoop-set",
-      categoryId: catEarrings.id,
+      name: "American Diamond Finger Ring",
+      slug: "ad-finger-ring-solitaire",
+      categoryId: catBySlug["ad-finger-ring"].id,
       price: 499,
       mrp: null,
       shortDesc:
-        "Classic rose gold hoops in 3 sizes — minimalist, versatile, essential.",
+        "Sparkling American Diamond finger ring — timeless, elegant, affordable.",
       description:
-        "<p>A set of 3 rose gold-plated hoop earrings in small, medium, and large sizes. Perfect for everyday wear or stacking multiple piercings.</p>",
+        "<p>A stunning American Diamond finger ring in rose gold-plated finish. Perfect for daily wear.</p>",
       stockQty: 40,
       stockStatus: "IN_STOCK",
       isPublished: true,
@@ -420,6 +385,12 @@ async function main() {
       imageUrl: JEWELLERY_IMAGES.earring2,
     },
   ];
+
+  // IDs for variant logic
+  const ringsCatId = catBySlug["rings"].id;
+  const adRingsCatId = catBySlug["ad-finger-ring"].id;
+  const banglesGPCatId = catBySlug["bangles"].id;
+  const adBanglesCatId = catBySlug["ad-bangles"].id;
 
   for (const productData of productsData) {
     const { imageUrl, ...rest } = productData;
@@ -435,8 +406,8 @@ async function main() {
       },
     });
 
-    // Add size variants for rings and bangles
-    if (product.categoryId === catRings.id) {
+    // Add size variants for rings
+    if (product.categoryId === ringsCatId || product.categoryId === adRingsCatId) {
       await prisma.productVariant.createMany({
         data: [
           { productId: product.id, name: "Ring Size", value: "5", priceDelta: 0 },
@@ -447,24 +418,14 @@ async function main() {
       });
     }
 
-    if (product.categoryId === catBangles.id) {
+    // Add size variants for bangles
+    if (product.categoryId === banglesGPCatId || product.categoryId === adBanglesCatId) {
       await prisma.productVariant.createMany({
         data: [
           { productId: product.id, name: "Bangle Size", value: "2/2", priceDelta: 0 },
           { productId: product.id, name: "Bangle Size", value: "2/4", priceDelta: 0 },
           { productId: product.id, name: "Bangle Size", value: "2/6", priceDelta: 0 },
           { productId: product.id, name: "Bangle Size", value: "2/8", priceDelta: 0 },
-        ],
-      });
-    }
-
-    // Add finish variants for the bridal set
-    if (product.categoryId === catBridal.id) {
-      await prisma.productVariant.createMany({
-        data: [
-          { productId: product.id, name: "Finish", value: "Gold Polish", priceDelta: 0 },
-          { productId: product.id, name: "Finish", value: "Antique Gold", priceDelta: 0 },
-          { productId: product.id, name: "Finish", value: "Silver Polish", priceDelta: -500 },
         ],
       });
     }
@@ -485,19 +446,19 @@ async function main() {
       },
       {
         imageUrl: JEWELLERY_IMAGES.hero2,
-        title: "Bridal Collection 2024",
-        subtitle: "Complete bridal sets crafted for your perfect day",
-        ctaText: "View Bridal Sets",
-        ctaLink: "/shop/bridal-sets",
+        title: "Gold Plated Collection",
+        subtitle: "1.5 gram gold — exquisite pieces for every occasion",
+        ctaText: "View Gold Plated",
+        ctaLink: "/shop/necklace",
         displayOrder: 2,
         isActive: true,
       },
       {
         imageUrl: JEWELLERY_IMAGES.hero3,
-        title: "Rings That Shine",
-        subtitle: "From everyday elegance to statement sparkle",
-        ctaText: "Shop Rings",
-        ctaLink: "/shop/rings",
+        title: "American Diamond Sparkle",
+        subtitle: "Brilliant AD jewellery for women who love to shine",
+        ctaText: "Shop American Diamond",
+        ctaLink: "/shop/ad-necklace",
         displayOrder: 3,
         isActive: true,
       },
@@ -523,7 +484,7 @@ async function main() {
       {
         name: "Ananya Sharma",
         rating: 5,
-        text: "I ordered the Bridal Set for my wedding and got SO many compliments! The quality is amazing for the price and Priya responded super fast on WhatsApp. Will definitely order again!",
+        text: "I ordered the Mangal Sutra set for my wedding and got SO many compliments! The quality is amazing for the price and Priya responded super fast on WhatsApp. Will definitely order again!",
         displayOrder: 1,
         isActive: true,
       },

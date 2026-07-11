@@ -10,6 +10,7 @@ interface Category {
   slug: string;
   description: string | null;
   imageUrl: string | null;
+  group: string | null;
   displayOrder: number;
   isActive: boolean;
 }
@@ -29,6 +30,7 @@ export default function AdminCategoriesPage() {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [group, setGroup] = useState("");
   const [displayOrder, setDisplayOrder] = useState("0");
   const [isActive, setIsActive] = useState(true);
 
@@ -68,6 +70,7 @@ export default function AdminCategoriesPage() {
     setSlug("");
     setDescription("");
     setImageUrl("");
+    setGroup("");
     setDisplayOrder("0");
     setIsActive(true);
     setIsModalOpen(true);
@@ -79,6 +82,7 @@ export default function AdminCategoriesPage() {
     setSlug(cat.slug);
     setDescription(cat.description ?? "");
     setImageUrl(cat.imageUrl ?? "");
+    setGroup(cat.group ?? "");
     setDisplayOrder(cat.displayOrder.toString());
     setIsActive(cat.isActive);
     setIsModalOpen(true);
@@ -126,6 +130,7 @@ export default function AdminCategoriesPage() {
       slug,
       description: description || null,
       imageUrl: imageUrl || null,
+      group: group || null,
       displayOrder: parseInt(displayOrder) || 0,
       isActive,
     };
@@ -227,6 +232,7 @@ export default function AdminCategoriesPage() {
               <tr className="border-b bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-500">
                 <th className="px-6 py-4">Image</th>
                 <th className="px-6 py-4">Category Name</th>
+                <th className="px-6 py-4">Group</th>
                 <th className="px-6 py-4">Slug</th>
                 <th className="px-6 py-4 text-center">Order</th>
                 <th className="px-6 py-4 text-center">Status</th>
@@ -250,6 +256,27 @@ export default function AdminCategoriesPage() {
                     )}
                   </td>
                   <td className="px-6 py-3 font-semibold text-gray-800">{cat.name}</td>
+                  <td className="px-6 py-3">
+                    {cat.group ? (
+                      <span
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
+                        style={{
+                          background:
+                            cat.group === "Gold Plated" ? "#fef3c7" :
+                            cat.group === "Anti Tarnish" ? "#e0f2fe" :
+                            cat.group === "American Diamond" ? "#ede9fe" : "#f3f4f6",
+                          color:
+                            cat.group === "Gold Plated" ? "#92400e" :
+                            cat.group === "Anti Tarnish" ? "#0369a1" :
+                            cat.group === "American Diamond" ? "#5b21b6" : "#6b7280",
+                        }}
+                      >
+                        {cat.group}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300 text-xs">—</span>
+                    )}
+                  </td>
                   <td className="px-6 py-3 text-gray-500 text-xs font-mono">{cat.slug}</td>
                   <td className="px-6 py-3 text-center text-gray-700">{cat.displayOrder}</td>
                   <td className="px-6 py-3 text-center">
@@ -356,6 +383,22 @@ export default function AdminCategoriesPage() {
                     placeholder="0"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Jewellery Group
+                </label>
+                <select
+                  value={group}
+                  onChange={(e) => setGroup(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                >
+                  <option value="">— No Group —</option>
+                  <option value="Gold Plated">Gold Plated (1.5g Gold)</option>
+                  <option value="Anti Tarnish">Anti Tarnish</option>
+                  <option value="American Diamond">American Diamond</option>
+                </select>
               </div>
 
               <div>

@@ -32,6 +32,7 @@ model Category {
   slug         String    @unique
   description  String?
   imageUrl     String?
+  group        String?   // e.g. "Gold Plated", "Anti Tarnish", "American Diamond"
   metaTitle    String?
   metaDesc     String?
   displayOrder Int       @default(0)
