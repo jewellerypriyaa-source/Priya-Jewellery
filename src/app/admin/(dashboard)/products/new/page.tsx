@@ -5,7 +5,7 @@ export default async function NewProductPage() {
   const categories = await prisma.category.findMany({
     where: { isActive: true },
     orderBy: { displayOrder: "asc" },
-    select: { id: true, name: true },
+    select: { id: true, name: true, group: true },
   });
 
   return <ProductForm categories={categories} />;

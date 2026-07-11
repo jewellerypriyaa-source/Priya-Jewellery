@@ -20,7 +20,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
     prisma.category.findMany({
       where: { isActive: true },
       orderBy: { displayOrder: "asc" },
-      select: { id: true, name: true },
+      select: { id: true, name: true, group: true },
     }),
   ]);
 

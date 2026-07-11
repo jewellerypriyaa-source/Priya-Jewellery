@@ -317,10 +317,21 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
                   required
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm bg-white"
                 >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
+                  {Object.entries(
+                    categories.reduce((acc, cat) => {
+                      const groupName = cat.group || "Other Categories";
+                      if (!acc[groupName]) acc[groupName] = [];
+                      acc[groupName].push(cat);
+                      return acc;
+                    }, {} as Record<string, typeof categories>)
+                  ).map(([groupName, groupCats]) => (
+                    <optgroup key={groupName} label={groupName}>
+                      {groupCats.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
