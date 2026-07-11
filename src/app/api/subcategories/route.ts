@@ -48,8 +48,14 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ subcategory }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[POST /api/subcategories]", error);
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "A subcategory with this slug already exists. Subcategory slugs must be globally unique (e.g. choose 'korean-necklace' instead of 'necklace')." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Failed to create subcategory" }, { status: 500 });
   }
 }

@@ -44,8 +44,14 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ category }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[POST /api/categories]", error);
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "A category with this slug already exists. Category slugs must be unique." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Failed to create category" }, { status: 500 });
   }
 }

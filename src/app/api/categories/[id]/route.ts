@@ -32,8 +32,14 @@ export async function PUT(
     });
 
     return NextResponse.json({ category });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[PUT /api/categories/[id]]", error);
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "A category with this slug already exists. Category slugs must be unique." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Failed to update category" }, { status: 500 });
   }
 }

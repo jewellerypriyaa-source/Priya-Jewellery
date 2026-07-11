@@ -31,8 +31,14 @@ export async function PUT(
     });
 
     return NextResponse.json({ subcategory });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[PUT /api/subcategories/[id]]", error);
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "A subcategory with this slug already exists. Subcategory slugs must be globally unique." },
+        { status: 400 }
+      );
+    }
     return NextResponse.json({ error: "Failed to update subcategory" }, { status: 500 });
   }
 }
