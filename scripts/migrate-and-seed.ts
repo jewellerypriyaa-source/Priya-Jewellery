@@ -59,6 +59,7 @@ async function main() {
   await prisma.productImage.deleteMany();
   await prisma.instagramPost.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.subcategory.deleteMany();
   await prisma.category.deleteMany();
   await prisma.heroBanner.deleteMany();
   await prisma.trustBadge.deleteMany();
@@ -100,36 +101,15 @@ async function main() {
   });
   console.log("✅ Settings upserted");
 
-  // Categories
+  // Categories (Top Level)
   const categoryDefs = [
-    { name: "Mangal Sutra",     slug: "mangal-sutra",     group: "Gold Plated",      displayOrder: 1  },
-    { name: "Sankhan and Pola", slug: "sankhan-and-pola", group: "Gold Plated",      displayOrder: 2  },
-    { name: "Pearl & Shell",    slug: "pearl-and-shell",  group: "Gold Plated",      displayOrder: 3  },
-    { name: "Chains",           slug: "chains",            group: "Gold Plated",      displayOrder: 4  },
-    { name: "Chura",            slug: "chura",             group: "Gold Plated",      displayOrder: 5  },
-    { name: "Earrings",         slug: "earrings",          group: "Gold Plated",      displayOrder: 6  },
-    { name: "Tie Chains",       slug: "tie-chains",        group: "Gold Plated",      displayOrder: 7  },
-    { name: "Pendants",         slug: "pendants",          group: "Gold Plated",      displayOrder: 8  },
-    { name: "Bangles",          slug: "bangles",           group: "Gold Plated",      displayOrder: 9  },
-    { name: "Necklace",         slug: "necklace",          group: "Gold Plated",      displayOrder: 10 },
-    { name: "Chokers",          slug: "chokers",           group: "Gold Plated",      displayOrder: 11 },
-    { name: "Sitahar",          slug: "sitahar",           group: "Gold Plated",      displayOrder: 12 },
-    { name: "Tiara and Tikli",  slug: "tiara-and-tikli",  group: "Gold Plated",      displayOrder: 13 },
-    { name: "Lahari",           slug: "lahari",            group: "Gold Plated",      displayOrder: 14 },
-    { name: "Rings",            slug: "rings",             group: "Gold Plated",      displayOrder: 15 },
-    { name: "Gents Kada",       slug: "gents-kada",        group: "Gold Plated",      displayOrder: 16 },
-    { name: "Anti Tarnish",     slug: "anti-tarnish",      group: "Anti Tarnish",     displayOrder: 1  },
-    { name: "Finger Ring",      slug: "ad-finger-ring",    group: "American Diamond", displayOrder: 1  },
-    { name: "Necklace Set",     slug: "ad-necklace",       group: "American Diamond", displayOrder: 2  },
-    { name: "Bangles Set",      slug: "ad-bangles",        group: "American Diamond", displayOrder: 3  },
-    { name: "Bracelet",         slug: "bracelet",          group: "American Diamond", displayOrder: 4  },
-    { name: "Mangal Sutra Set", slug: "ad-mangal-sutra",   group: "American Diamond", displayOrder: 5  },
-    { name: "Earrings Set",     slug: "ad-earrings",       group: "American Diamond", displayOrder: 6  },
-    { name: "Mang Tika",        slug: "mang-tika",         group: "American Diamond", displayOrder: 7  },
-    { name: "Polki Kundan",     slug: "polki-kundan",      group: "Polki Kundan",     displayOrder: 1  },
-    { name: "Bridal Sets",      slug: "bridal-sets",       group: "Bridal",           displayOrder: 1  },
-    { name: "German Silver",    slug: "german-silver",     group: "German Silver",    displayOrder: 1  },
-    { name: "Oxidised Jewellery",slug: "oxidised",         group: "Oxidised",         displayOrder: 1  },
+    { name: "Gold Plated (1.5g Gold)", slug: "gold-plated", displayOrder: 1 },
+    { name: "Anti Tarnish", slug: "anti-tarnish", displayOrder: 2 },
+    { name: "American Diamond", slug: "american-diamond", displayOrder: 3 },
+    { name: "Polki Kundan", slug: "polki-kundan", displayOrder: 4 },
+    { name: "Bridal Sets", slug: "bridal-sets", displayOrder: 5 },
+    { name: "German Silver", slug: "german-silver", displayOrder: 6 },
+    { name: "Oxidised Jewellery", slug: "oxidised", displayOrder: 7 },
   ];
 
   const categories = await Promise.all(
@@ -138,11 +118,7 @@ async function main() {
         data: {
           name: cat.name,
           slug: cat.slug,
-          group: cat.group,
           displayOrder: cat.displayOrder,
-          description: `${cat.group} — ${cat.name} collection at Priyaa Jewellery.`,
-          metaTitle: `${cat.name} | ${cat.group} | Priyaa Jewellery`,
-          metaDesc: `Shop ${cat.name} from our ${cat.group} collection. Quality jewellery at great prices.`,
           isActive: true,
         },
       })
@@ -151,52 +127,101 @@ async function main() {
   const catBySlug = Object.fromEntries(categories.map((c) => [c.slug, c]));
   console.log(`✅ ${categories.length} categories created`);
 
-  // Products
-  const productsData = [
-    { name: "Royal Kundan Necklace",     slug: "royal-kundan-necklace",    categoryId: catBySlug["necklace"].id,      price: 2499, mrp: 3199,  stockQty: 8,  stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.necklace1, shortDesc: "Exquisite Kundan necklace with meenakari work.", description: "<p>Gold-plated Kundan necklace with meenakari enamel. Perfect for weddings.</p>", metaTitle: "Royal Kundan Necklace | Priya Jewellery", metaDesc: "Shop Kundan necklace at Priya Jewellery." },
-    { name: "Delicate Pearl Chain",      slug: "delicate-pearl-chain",     categoryId: catBySlug["pearl-and-shell"].id, price: 899,  mrp: 1199,  stockQty: 15, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.necklace2, shortDesc: "Dainty freshwater pearl chain.", description: "<p>Timeless freshwater pearl chain with gold-plated clasp.</p>" },
-    { name: "Oxidised Silver Jhumkas",   slug: "oxidised-silver-jhumkas",  categoryId: catBySlug["earrings"].id,       price: 649,  mrp: 849,   stockQty: 20, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.earring1,  shortDesc: "Classic oxidised silver jhumkas.", description: "<p>Beautiful oxidised silver jhumkas with floral motifs.</p>" },
-    { name: "Gold Chandbali Earrings",   slug: "gold-chandbali-earrings",  categoryId: catBySlug["earrings"].id,       price: 1299, mrp: 1599,  stockQty: 5,  stockStatus: "LOW_STOCK", isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring2,  shortDesc: "Statement gold chandbali earrings with pearl drops.", description: "<p>Gold-plated chandbali earrings with pearl drops.</p>" },
-    { name: "Gold Plated Bangle Set",    slug: "gold-plated-bangle-set",   categoryId: catBySlug["bangles"].id,        price: 799,  mrp: 999,   stockQty: 30, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: false, imageUrl: JEWELLERY_IMAGES.bangle1,   shortDesc: "Set of 6 thin gold-plated bangles.", description: "<p>Set of 6 thin gold-plated bangles in standard sizes.</p>" },
-    { name: "Diamond-Cut Solitaire Ring",slug: "diamond-cut-solitaire-ring",categoryId: catBySlug["rings"].id,         price: 1499, mrp: 1999,  stockQty: 10, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: true,  imageUrl: JEWELLERY_IMAGES.ring1,     shortDesc: "Sparkling diamond-cut solitaire ring.", description: "<p>Elegant solitaire ring with CZ stone in gold-plated setting.</p>" },
-    { name: "Floral Statement Ring",     slug: "floral-statement-ring",    categoryId: catBySlug["rings"].id,          price: 549,  mrp: null,   stockQty: 12, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.ring2,     shortDesc: "Bold floral cocktail ring.", description: "<p>Bold cocktail ring with multicolour glass stones.</p>" },
-    { name: "Gold Plated Choker",        slug: "gold-plated-choker",       categoryId: catBySlug["chokers"].id,        price: 449,  mrp: 599,   stockQty: 25, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.choker1,   shortDesc: "Trendy gold-plated choker.", description: "<p>Classic gold-plated choker with adjustable clasp.</p>" },
-    { name: "Bridal Mangal Sutra Set",   slug: "bridal-mangal-sutra-set",  categoryId: catBySlug["mangal-sutra"].id,   price: 8999, mrp: 12000, stockQty: 3,  stockStatus: "LOW_STOCK", isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.bridal1,   shortDesc: "Full bridal mangal sutra set.", description: "<p>Gold-plated mangal sutra with black bead chains.</p>" },
-    { name: "Gold Pendant Set",          slug: "gold-pendant-set",         categoryId: catBySlug["pendants"].id,       price: 1199, mrp: 1499,  stockQty: 18, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.pendant1,  shortDesc: "Delicate gold-plated pendant.", description: "<p>Teardrop pendant with rose quartz stone in gold-plated setting.</p>" },
-    { name: "Traditional Temple Earrings",slug: "traditional-temple-earrings",categoryId: catBySlug["earrings"].id,   price: 1599, mrp: 2099,  stockQty: 0,  stockStatus: "SOLD_OUT",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring1,  shortDesc: "Gold-plated temple earrings with Lakshmi motif.", description: "<p>Temple jewellery earrings with Lakshmi motif and pearl drops.</p>" },
-    { name: "American Diamond Finger Ring",slug: "ad-finger-ring-solitaire",categoryId: catBySlug["ad-finger-ring"].id,price: 499, mrp: null,   stockQty: 40, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring2,  shortDesc: "Sparkling American Diamond finger ring.", description: "<p>American Diamond finger ring in rose gold-plated finish.</p>" },
+  // Subcategories
+  const subcategoryDefs = [
+    { name: "Mangal Sutra",     slug: "mangal-sutra",     categoryId: catBySlug["gold-plated"].id,      displayOrder: 1  },
+    { name: "Sankhan and Pola", slug: "sankhan-and-pola", categoryId: catBySlug["gold-plated"].id,      displayOrder: 2  },
+    { name: "Pearl & Shell",    slug: "pearl-and-shell",  categoryId: catBySlug["gold-plated"].id,      displayOrder: 3  },
+    { name: "Chains",           slug: "chains",            categoryId: catBySlug["gold-plated"].id,      displayOrder: 4  },
+    { name: "Chura",            slug: "chura",             categoryId: catBySlug["gold-plated"].id,      displayOrder: 5  },
+    { name: "Earrings",         slug: "earrings",          categoryId: catBySlug["gold-plated"].id,      displayOrder: 6  },
+    { name: "Tie Chains",       slug: "tie-chains",        categoryId: catBySlug["gold-plated"].id,      displayOrder: 7  },
+    { name: "Pendants",         slug: "pendants",          categoryId: catBySlug["gold-plated"].id,      displayOrder: 8  },
+    { name: "Bangles",          slug: "bangles",           categoryId: catBySlug["gold-plated"].id,      displayOrder: 9  },
+    { name: "Necklace",         slug: "necklace",          categoryId: catBySlug["gold-plated"].id,      displayOrder: 10 },
+    { name: "Chokers",          slug: "chokers",           categoryId: catBySlug["gold-plated"].id,      displayOrder: 11 },
+    { name: "Sitahar",          slug: "sitahar",           categoryId: catBySlug["gold-plated"].id,      displayOrder: 12 },
+    { name: "Tiara and Tikli",  slug: "tiara-and-tikli",  categoryId: catBySlug["gold-plated"].id,      displayOrder: 13 },
+    { name: "Lahari",           slug: "lahari",            categoryId: catBySlug["gold-plated"].id,      displayOrder: 14 },
+    { name: "Rings",            slug: "rings",             categoryId: catBySlug["gold-plated"].id,      displayOrder: 15 },
+    { name: "Gents Kada",       slug: "gents-kada",        categoryId: catBySlug["gold-plated"].id,      displayOrder: 16 },
+    { name: "Anti Tarnish",     slug: "anti-tarnish-sub",  categoryId: catBySlug["anti-tarnish"].id,     displayOrder: 1  },
+    { name: "Finger Ring",      slug: "ad-finger-ring",    categoryId: catBySlug["american-diamond"].id, displayOrder: 1  },
+    { name: "Necklace Set",     slug: "ad-necklace",       categoryId: catBySlug["american-diamond"].id, displayOrder: 2  },
+    { name: "Bangles Set",      slug: "ad-bangles",        categoryId: catBySlug["american-diamond"].id, displayOrder: 3  },
+    { name: "Bracelet",         slug: "bracelet",          categoryId: catBySlug["american-diamond"].id, displayOrder: 4  },
+    { name: "Mangal Sutra Set", slug: "ad-mangal-sutra",   categoryId: catBySlug["american-diamond"].id, displayOrder: 5  },
+    { name: "Earrings Set",     slug: "ad-earrings",       categoryId: catBySlug["american-diamond"].id, displayOrder: 6  },
+    { name: "Mang Tika",        slug: "mang-tika",         categoryId: catBySlug["american-diamond"].id, displayOrder: 7  },
+    { name: "Polki Kundan",     slug: "polki-kundan-sub",  categoryId: catBySlug["polki-kundan"].id,     displayOrder: 1  },
+    { name: "Bridal Sets",      slug: "bridal-sets-sub",   categoryId: catBySlug["bridal-sets"].id,      displayOrder: 1  },
+    { name: "German Silver",    slug: "german-silver-sub", categoryId: catBySlug["german-silver"].id,    displayOrder: 1  },
+    { name: "Oxidised",         slug: "oxidised-sub",      categoryId: catBySlug["oxidised"].id,         displayOrder: 1  },
   ];
 
-  const ringsCatId = catBySlug["rings"].id;
-  const adRingsCatId = catBySlug["ad-finger-ring"].id;
-  const banglesGPCatId = catBySlug["bangles"].id;
-  const adBanglesCatId = catBySlug["ad-bangles"].id;
+  const subcategories = await Promise.all(
+    subcategoryDefs.map((subcat) =>
+      prisma.subcategory.create({
+        data: {
+          name: subcat.name,
+          slug: subcat.slug,
+          categoryId: subcat.categoryId,
+          displayOrder: subcat.displayOrder,
+          isActive: true,
+        },
+      })
+    )
+  );
+  const subcatBySlug = Object.fromEntries(subcategories.map((c) => [c.slug, c]));
+  console.log(`✅ ${subcategories.length} subcategories created`);
 
-  const catIdsWithProducts = new Set<string>();
+  // Products
+  const productsData = [
+    { name: "Royal Kundan Necklace",     slug: "royal-kundan-necklace",    subcategoryId: subcatBySlug["necklace"].id, categoryId: subcatBySlug["necklace"].categoryId, price: 2499, mrp: 3199,  stockQty: 8,  stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.necklace1, shortDesc: "Exquisite Kundan necklace with meenakari work.", description: "<p>Gold-plated Kundan necklace with meenakari enamel. Perfect for weddings.</p>", metaTitle: "Royal Kundan Necklace | Priya Jewellery", metaDesc: "Shop Kundan necklace at Priya Jewellery." },
+    { name: "Delicate Pearl Chain",      slug: "delicate-pearl-chain",     subcategoryId: subcatBySlug["pearl-and-shell"].id, categoryId: subcatBySlug["pearl-and-shell"].categoryId, price: 899,  mrp: 1199,  stockQty: 15, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.necklace2, shortDesc: "Dainty freshwater pearl chain.", description: "<p>Timeless freshwater pearl chain with gold-plated clasp.</p>" },
+    { name: "Oxidised Silver Jhumkas",   slug: "oxidised-silver-jhumkas",  subcategoryId: subcatBySlug["earrings"].id, categoryId: subcatBySlug["earrings"].categoryId, price: 649,  mrp: 849,   stockQty: 20, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.earring1,  shortDesc: "Classic oxidised silver jhumkas.", description: "<p>Beautiful oxidised silver jhumkas with floral motifs.</p>" },
+    { name: "Gold Chandbali Earrings",   slug: "gold-chandbali-earrings",  subcategoryId: subcatBySlug["earrings"].id, categoryId: subcatBySlug["earrings"].categoryId, price: 1299, mrp: 1599,  stockQty: 5,  stockStatus: "LOW_STOCK", isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring2,  shortDesc: "Statement gold chandbali earrings with pearl drops.", description: "<p>Gold-plated chandbali earrings with pearl drops.</p>" },
+    { name: "Gold Plated Bangle Set",    slug: "gold-plated-bangle-set",   subcategoryId: subcatBySlug["bangles"].id, categoryId: subcatBySlug["bangles"].categoryId, price: 799,  mrp: 999,   stockQty: 30, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: false, imageUrl: JEWELLERY_IMAGES.bangle1,   shortDesc: "Set of 6 thin gold-plated bangles.", description: "<p>Set of 6 thin gold-plated bangles in standard sizes.</p>" },
+    { name: "Diamond-Cut Solitaire Ring",slug: "diamond-cut-solitaire-ring",subcategoryId: subcatBySlug["rings"].id, categoryId: subcatBySlug["rings"].categoryId, price: 1499, mrp: 1999,  stockQty: 10, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: true,  imageUrl: JEWELLERY_IMAGES.ring1,     shortDesc: "Sparkling diamond-cut solitaire ring.", description: "<p>Elegant solitaire ring with CZ stone in gold-plated setting.</p>" },
+    { name: "Floral Statement Ring",     slug: "floral-statement-ring",    subcategoryId: subcatBySlug["rings"].id, categoryId: subcatBySlug["rings"].categoryId, price: 549,  mrp: null,   stockQty: 12, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.ring2,     shortDesc: "Bold floral cocktail ring.", description: "<p>Bold cocktail ring with multicolour glass stones.</p>" },
+    { name: "Gold Plated Choker",        slug: "gold-plated-choker",       subcategoryId: subcatBySlug["chokers"].id, categoryId: subcatBySlug["chokers"].categoryId, price: 449,  mrp: 599,   stockQty: 25, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.choker1,   shortDesc: "Trendy gold-plated choker.", description: "<p>Classic gold-plated choker with adjustable clasp.</p>" },
+    { name: "Bridal Mangal Sutra Set",   slug: "bridal-mangal-sutra-set",  subcategoryId: subcatBySlug["mangal-sutra"].id, categoryId: subcatBySlug["mangal-sutra"].categoryId, price: 8999, mrp: 12000, stockQty: 3,  stockStatus: "LOW_STOCK", isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: true,  imageUrl: JEWELLERY_IMAGES.bridal1,   shortDesc: "Full bridal mangal sutra set.", description: "<p>Gold-plated mangal sutra with black bead chains.</p>" },
+    { name: "Gold Pendant Set",          slug: "gold-pendant-set",         subcategoryId: subcatBySlug["pendants"].id, categoryId: subcatBySlug["pendants"].categoryId, price: 1199, mrp: 1499,  stockQty: 18, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.pendant1,  shortDesc: "Delicate gold-plated pendant.", description: "<p>Teardrop pendant with rose quartz stone in gold-plated setting.</p>" },
+    { name: "Traditional Temple Earrings",slug: "traditional-temple-earrings",subcategoryId: subcatBySlug["earrings"].id, categoryId: subcatBySlug["earrings"].categoryId, price: 1599, mrp: 2099,  stockQty: 0,  stockStatus: "SOLD_OUT",  isPublished: true, isBestseller: true,  isNewArrival: false, isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring1,  shortDesc: "Gold-plated temple earrings with Lakshmi motif.", description: "<p>Temple jewellery earrings with Lakshmi motif and pearl drops.</p>" },
+    { name: "American Diamond Finger Ring",slug: "ad-finger-ring-solitaire",subcategoryId: subcatBySlug["ad-finger-ring"].id, categoryId: subcatBySlug["ad-finger-ring"].categoryId, price: 499, mrp: null,   stockQty: 40, stockStatus: "IN_STOCK",  isPublished: true, isBestseller: false, isNewArrival: true,  isFeatured: false, imageUrl: JEWELLERY_IMAGES.earring2,  shortDesc: "Sparkling American Diamond finger ring.", description: "<p>American Diamond finger ring in rose gold-plated finish.</p>" },
+  ];
+
+  const ringsCatId = subcatBySlug["rings"].id;
+  const adRingsCatId = subcatBySlug["ad-finger-ring"].id;
+  const banglesGPCatId = subcatBySlug["bangles"].id;
+  const adBanglesCatId = subcatBySlug["ad-bangles"].id;
+
+  const subcatIdsWithProducts = new Set<string>();
 
   for (const productData of productsData) {
     const { imageUrl, ...rest } = productData;
     const product = await prisma.product.create({ data: rest });
     await prisma.productImage.create({ data: { productId: product.id, url: imageUrl, altText: product.name, isPrimary: true, displayOrder: 0 } });
-    catIdsWithProducts.add(product.categoryId);
+    subcatIdsWithProducts.add(product.subcategoryId);
 
-    if (product.categoryId === ringsCatId || product.categoryId === adRingsCatId) {
+    if (product.subcategoryId === ringsCatId || product.subcategoryId === adRingsCatId) {
       await prisma.productVariant.createMany({ data: [5,6,7,8].map(s => ({ productId: product.id, name: "Ring Size", value: String(s), priceDelta: 0 })) });
     }
-    if (product.categoryId === banglesGPCatId || product.categoryId === adBanglesCatId) {
+    if (product.subcategoryId === banglesGPCatId || product.subcategoryId === adBanglesCatId) {
       await prisma.productVariant.createMany({ data: ["2/2","2/4","2/6","2/8"].map(s => ({ productId: product.id, name: "Bangle Size", value: s, priceDelta: 0 })) });
     }
   }
 
-  // Generate mock products for any category that doesn't have one
+  // Generate mock products for any subcategory that doesn't have one
   let mockCount = 0;
-  for (const category of categories) {
-    if (!catIdsWithProducts.has(category.id)) {
+  for (const subcategory of subcategories) {
+    if (!subcatIdsWithProducts.has(subcategory.id)) {
       const mockProduct = await prisma.product.create({
         data: {
-          name: `${category.name} Elegance`,
-          slug: `mock-${category.slug}-elegance`,
-          categoryId: category.id,
+          name: `${subcategory.name} Elegance`,
+          slug: `mock-${subcategory.slug}-elegance`,
+          categoryId: subcategory.categoryId,
+          subcategoryId: subcategory.id,
           price: 999 + Math.floor(Math.random() * 1000),
           mrp: 2499,
           stockQty: 10,
@@ -205,10 +230,11 @@ async function main() {
           isBestseller: Math.random() > 0.5,
           isNewArrival: true,
           isFeatured: false,
-          shortDesc: `Beautiful ${category.name} for everyday wear.`,
-          description: `<p>High quality mock product for ${category.name}.</p>`
+          shortDesc: `Beautiful ${subcategory.name} for everyday wear.`,
+          description: `<p>High quality mock product for ${subcategory.name}.</p>`
         }
       });
+
       
       const mockImage = Object.values(JEWELLERY_IMAGES)[Math.floor(Math.random() * 10)];
       

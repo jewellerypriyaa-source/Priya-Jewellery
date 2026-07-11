@@ -9,7 +9,12 @@ import toast from "react-hot-toast";
 interface Category {
   id: string;
   name: string;
-  group?: string | null;
+}
+
+interface Subcategory {
+  id: string;
+  name: string;
+  categoryId: string;
 }
 
 interface ProductImage {
@@ -28,10 +33,11 @@ interface ProductVariant {
 
 interface ProductFormProps {
   categories: Category[];
+  subcategories: Subcategory[];
   initialData?: any;
 }
 
-export default function ProductForm({ categories, initialData }: ProductFormProps) {
+export default function ProductForm({ categories, subcategories, initialData }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -40,7 +46,11 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
   const [name, setName] = useState(initialData?.name ?? "");
   const [slug, setSlug] = useState(initialData?.slug ?? "");
   const [sku, setSku] = useState(initialData?.sku ?? "");
-  const [categoryId, setCategoryId] = useState(initialData?.categoryId ?? categories[0]?.id ?? "");
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId ?? (categories.length > 0 ? categories[0].id : ""));
+  
+  // Set initial subcategory based on initialData or first available subcategory for the selected category
+  const defaultSubcategory = initialData?.subcategoryId ?? (subcategories.find(s => s.categoryId === (initialData?.categoryId ?? categories[0]?.id))?.id ?? "");
+  const [subcategoryId, setSubcategoryId] = useState(defaultSubcategory);
   const [price, setPrice] = useState(initialData?.price?.toString() ?? "");
   const [mrp, setMrp] = useState(initialData?.mrp?.toString() ?? "");
   const [shortDesc, setShortDesc] = useState(initialData?.shortDesc ?? "");
@@ -176,6 +186,7 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
         slug,
         sku: sku || null,
         categoryId,
+        subcategoryId,
         price: parseFloat(price),
         mrp: mrp ? parseFloat(mrp) : null,
         shortDesc: shortDesc || null,
@@ -310,32 +321,50 @@ export default function ProductForm({ categories, initialData }: ProductFormProp
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
-                  Category *
+                  Category (Group) *
                 </label>
                 <select
                   value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
+                  onChange={(e) => {
+                    const newCatId = e.target.value;
+                    setCategoryId(newCatId);
+                    // Automatically select first subcategory of new category
+                    const firstSub = subcategories.find(s => s.categoryId === newCatId);
+                    setSubcategoryId(firstSub ? firstSub.id : "");
+                  }}
                   required
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm bg-white"
                 >
-                  {Object.entries(
-                    categories.reduce((acc, cat) => {
-                      const groupName = cat.group || "Other Categories";
-                      if (!acc[groupName]) acc[groupName] = [];
-                      acc[groupName].push(cat);
-                      return acc;
-                    }, {} as Record<string, typeof categories>)
-                  ).map(([groupName, groupCats]) => (
-                    <optgroup key={groupName} label={groupName}>
-                      {groupCats.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </option>
-                      ))}
-                    </optgroup>
+                  <option value="" disabled>Select a Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
                   ))}
                 </select>
               </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Subcategory *
+                </label>
+                <select
+                  value={subcategoryId}
+                  onChange={(e) => setSubcategoryId(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm bg-white"
+                >
+                  <option value="" disabled>Select a Subcategory</option>
+                  {subcategories
+                    .filter(s => s.categoryId === categoryId)
+                    .map((subcat) => (
+                      <option key={subcat.id} value={subcat.id}>
+                        {subcat.name}
+                      </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">

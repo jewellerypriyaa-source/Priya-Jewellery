@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const categorySlug = Array.isArray(category) ? category[0] : category;
 
   if (categorySlug) {
-    const cat = await prisma.category.findUnique({ where: { slug: categorySlug } });
+    const cat = await prisma.subcategory.findUnique({ where: { slug: categorySlug } });
     if (cat) {
       return {
         title: cat.metaTitle ?? `${cat.name} Jewellery`,
@@ -45,14 +45,14 @@ export default async function ShopPage({ params, searchParams }: PageProps) {
 
   // Fetch category info if browsing by category
   const categoryInfo = categorySlug
-    ? await prisma.category.findUnique({
+    ? await prisma.subcategory.findUnique({
         where: { slug: categorySlug },
         select: { id: true, name: true, slug: true, description: true, imageUrl: true },
       })
     : null;
 
-  // Fetch all categories for the filter sidebar
-  const allCategories = await prisma.category.findMany({
+  // Fetch all subcategories for the filter sidebar
+  const allCategories = await prisma.subcategory.findMany({
     where: { isActive: true },
     orderBy: { displayOrder: "asc" },
     select: { id: true, name: true, slug: true },

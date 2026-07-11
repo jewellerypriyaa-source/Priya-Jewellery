@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { name, slug, description, imageUrl, displayOrder, isActive, group } = body;
+    const { name, slug, description, imageUrl, displayOrder, isActive } = body;
 
     if (!name || !slug) {
       return NextResponse.json({ error: "Name and Slug are required" }, { status: 400 });
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         slug,
         description,
         imageUrl,
-        group: group || null,
+
         displayOrder: displayOrder ? parseInt(displayOrder) : 0,
         isActive: isActive !== false,
       },

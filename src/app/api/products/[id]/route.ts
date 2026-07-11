@@ -56,6 +56,7 @@ export async function PUT(
       slug,
       sku,
       categoryId,
+      subcategoryId,
       price,
       mrp,
       shortDesc,
@@ -78,6 +79,7 @@ export async function PUT(
     if (slug !== undefined) updateData.slug = slug;
     if (sku !== undefined) updateData.sku = sku || null;
     if (categoryId !== undefined) updateData.categoryId = categoryId;
+    if (subcategoryId !== undefined) updateData.subcategoryId = subcategoryId;
     if (price !== undefined) updateData.price = parseFloat(price);
     if (mrp !== undefined) updateData.mrp = mrp ? parseFloat(mrp) : null;
     if (shortDesc !== undefined) updateData.shortDesc = shortDesc || null;

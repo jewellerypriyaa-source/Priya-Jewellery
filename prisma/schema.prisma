@@ -32,9 +32,26 @@ model Category {
   slug         String    @unique
   description  String?
   imageUrl     String?
-  group        String?   // e.g. "Gold Plated", "Anti Tarnish", "American Diamond"
-  metaTitle    String?
-  metaDesc     String?
+  displayOrder Int       @default(0)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  subcategories Subcategory[]
+  products      Product[]
+}
+
+// ─────────────────────────────────────────
+// SUBCATEGORY
+// ─────────────────────────────────────────
+model Subcategory {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  categoryId   String
+  category     Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  description  String?
+  imageUrl     String?
   displayOrder Int       @default(0)
   isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now())
@@ -53,6 +70,8 @@ model Product {
   sku             String?
   categoryId      String
   category        Category        @relation(fields: [categoryId], references: [id])
+  subcategoryId   String
+  subcategory     Subcategory     @relation(fields: [subcategoryId], references: [id])
 
   price           Float
   mrp             Float?

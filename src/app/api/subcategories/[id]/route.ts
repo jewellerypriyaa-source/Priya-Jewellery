@@ -2,12 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-// PUT /api/categories/[id] — Update a category (admin only)
+// PUT /api/subcategories/[id] — Update a subcategory (admin only)
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // ── Auth guard ──────────────────────────────────────────────────────────
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,34 +15,33 @@ export async function PUT(
   const { id } = await params;
   try {
     const body = await req.json();
-    const { name, slug, description, imageUrl, displayOrder, isActive } = body;
+    const { name, slug, description, imageUrl, displayOrder, isActive, categoryId } = body;
 
-    const category = await prisma.category.update({
+    const subcategory = await prisma.subcategory.update({
       where: { id },
       data: {
         name,
         slug,
         description,
         imageUrl,
-
+        categoryId,
         displayOrder: displayOrder !== undefined ? parseInt(displayOrder) : undefined,
         isActive: isActive !== undefined ? !!isActive : undefined,
       },
     });
 
-    return NextResponse.json({ category });
+    return NextResponse.json({ subcategory });
   } catch (error) {
-    console.error("[PUT /api/categories/[id]]", error);
-    return NextResponse.json({ error: "Failed to update category" }, { status: 500 });
+    console.error("[PUT /api/subcategories/[id]]", error);
+    return NextResponse.json({ error: "Failed to update subcategory" }, { status: 500 });
   }
 }
 
-// DELETE /api/categories/[id] — Delete a category (admin only)
+// DELETE /api/subcategories/[id] — Delete a subcategory (admin only)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  // ── Auth guard ──────────────────────────────────────────────────────────
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -51,10 +49,10 @@ export async function DELETE(
 
   const { id } = await params;
   try {
-    await prisma.category.delete({ where: { id } });
+    await prisma.subcategory.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[DELETE /api/categories/[id]]", error);
-    return NextResponse.json({ error: "Failed to delete category" }, { status: 500 });
+    console.error("[DELETE /api/subcategories/[id]]", error);
+    return NextResponse.json({ error: "Failed to delete subcategory" }, { status: 500 });
   }
 }

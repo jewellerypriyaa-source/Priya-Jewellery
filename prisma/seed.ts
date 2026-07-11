@@ -16,9 +16,14 @@
  */
 
 import { PrismaClient } from "../src/generated/prisma/index.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter } as any);
 
 // Unsplash jewellery images (free to use, no key needed for direct URLs)
 const JEWELLERY_IMAGES = {
@@ -62,7 +67,6 @@ async function main() {
   await prisma.productImage.deleteMany();
   await prisma.instagramPost.deleteMany();
   await prisma.product.deleteMany();
-  await prisma.category.deleteMany();
   await prisma.heroBanner.deleteMany();
   await prisma.trustBadge.deleteMany();
   await prisma.testimonial.deleteMany();
@@ -105,12 +109,33 @@ async function main() {
   });
   console.log("✅ Settings upserted");
 
-  // ── Categories ──────────────────────────────────────────────────────
-  // Group 1: Gold Plated (1.5 gram Gold) — 16 subcategories
-  // Group 2: Anti Tarnish — 1 placeholder (subcategories to be added later)
-  // Group 3: American Diamond — 7 subcategories
-
+  // ── Categories & Subcategories ──────────────────────────────────────
   const categoryDefs = [
+    { name: "Gold Plated", slug: "gold-plated", displayOrder: 1 },
+    { name: "Anti Tarnish", slug: "anti-tarnish", displayOrder: 2 },
+    { name: "American Diamond", slug: "american-diamond", displayOrder: 3 },
+    { name: "Polki Kundan", slug: "polki-kundan", displayOrder: 4 },
+    { name: "Bridal", slug: "bridal", displayOrder: 5 },
+    { name: "German Silver", slug: "german-silver", displayOrder: 6 },
+    { name: "Oxidised", slug: "oxidised", displayOrder: 7 },
+  ];
+
+  const categories = await Promise.all(
+    categoryDefs.map((cat) =>
+      prisma.category.create({
+        data: {
+          name: cat.name,
+          slug: cat.slug,
+          displayOrder: cat.displayOrder,
+          isActive: true,
+        },
+      })
+    )
+  );
+
+  const catByName = Object.fromEntries(categories.map((c) => [c.name, c]));
+
+  const subcategoryDefs = [
     // ── Gold Plated ──────────────────────────────────────────────────
     { name: "Mangal Sutra",    slug: "mangal-sutra",    group: "Gold Plated",     displayOrder: 1  },
     { name: "Sankhan and Pola",slug: "sankhan-and-pola",group: "Gold Plated",     displayOrder: 2  },
@@ -142,33 +167,32 @@ async function main() {
     { name: "Mang Tika",       slug: "mang-tika",       group: "American Diamond",displayOrder: 7  },
   ];
 
-  const categories = await Promise.all(
-    categoryDefs.map((cat) =>
-      prisma.category.create({
+  const subcategories = await Promise.all(
+    subcategoryDefs.map((subcat) =>
+      prisma.subcategory.create({
         data: {
-          name: cat.name,
-          slug: cat.slug,
-          group: cat.group,
-          displayOrder: cat.displayOrder,
-          description: `${cat.group} — ${cat.name} collection at Priyaa Jewellery.`,
-          metaTitle: `${cat.name} | ${cat.group} | Priyaa Jewellery`,
-          metaDesc: `Shop ${cat.name} from our ${cat.group} collection. Quality jewellery at great prices.`,
+          name: subcat.name,
+          slug: subcat.slug,
+          categoryId: catByName[subcat.group].id,
+          displayOrder: subcat.displayOrder,
+          description: `${subcat.group} — ${subcat.name} collection at Priyaa Jewellery.`,
           isActive: true,
         },
       })
     )
   );
 
-  // Lookup helper: catBySlug["earrings"] → category object
-  const catBySlug = Object.fromEntries(categories.map((c) => [c.slug, c]));
-  console.log(`✅ ${categories.length} categories created`);
+  // Lookup helper: subcatBySlug["earrings"] → subcategory object
+  const subcatBySlug = Object.fromEntries(subcategories.map((c) => [c.slug, c]));
+  console.log(`✅ ${categories.length} categories & ${subcategories.length} subcategories created`);
 
   // ── Products ────────────────────────────────────────────────────────
   const productsData = [
     {
       name: "Royal Kundan Necklace",
       slug: "royal-kundan-necklace",
-      categoryId: catBySlug["necklace"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["necklace"].id,
       price: 2499,
       mrp: 3199,
       shortDesc:
@@ -189,7 +213,8 @@ async function main() {
     {
       name: "Delicate Pearl Chain",
       slug: "delicate-pearl-chain",
-      categoryId: catBySlug["pearl-and-shell"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["pearl-and-shell"].id,
       price: 899,
       mrp: 1199,
       shortDesc:
@@ -207,7 +232,8 @@ async function main() {
     {
       name: "Oxidised Silver Jhumkas",
       slug: "oxidised-silver-jhumkas",
-      categoryId: catBySlug["earrings"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["earrings"].id,
       price: 649,
       mrp: 849,
       shortDesc:
@@ -225,7 +251,8 @@ async function main() {
     {
       name: "Gold Chandbali Earrings",
       slug: "gold-chandbali-earrings",
-      categoryId: catBySlug["earrings"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["earrings"].id,
       price: 1299,
       mrp: 1599,
       shortDesc:
@@ -243,7 +270,8 @@ async function main() {
     {
       name: "Gold Plated Bangle Set",
       slug: "gold-plated-bangle-set",
-      categoryId: catBySlug["bangles"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["bangles"].id,
       price: 799,
       mrp: 999,
       shortDesc:
@@ -261,7 +289,8 @@ async function main() {
     {
       name: "Diamond-Cut Solitaire Ring",
       slug: "diamond-cut-solitaire-ring",
-      categoryId: catBySlug["rings"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["rings"].id,
       price: 1499,
       mrp: 1999,
       shortDesc:
@@ -279,7 +308,8 @@ async function main() {
     {
       name: "Floral Statement Ring",
       slug: "floral-statement-ring",
-      categoryId: catBySlug["rings"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["rings"].id,
       price: 549,
       mrp: null,
       shortDesc:
@@ -297,7 +327,8 @@ async function main() {
     {
       name: "Gold Plated Choker",
       slug: "gold-plated-choker",
-      categoryId: catBySlug["chokers"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["chokers"].id,
       price: 449,
       mrp: 599,
       shortDesc:
@@ -315,7 +346,8 @@ async function main() {
     {
       name: "Bridal Mangal Sutra Set",
       slug: "bridal-mangal-sutra-set",
-      categoryId: catBySlug["mangal-sutra"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["mangal-sutra"].id,
       price: 8999,
       mrp: 12000,
       shortDesc:
@@ -333,7 +365,8 @@ async function main() {
     {
       name: "Gold Pendant Set",
       slug: "gold-pendant-set",
-      categoryId: catBySlug["pendants"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["pendants"].id,
       price: 1199,
       mrp: 1499,
       shortDesc:
@@ -351,7 +384,8 @@ async function main() {
     {
       name: "Traditional Temple Earrings",
       slug: "traditional-temple-earrings",
-      categoryId: catBySlug["earrings"].id,
+      categoryId: catByName["Gold Plated"].id,
+      subcategoryId: subcatBySlug["earrings"].id,
       price: 1599,
       mrp: 2099,
       shortDesc:
@@ -369,7 +403,8 @@ async function main() {
     {
       name: "American Diamond Finger Ring",
       slug: "ad-finger-ring-solitaire",
-      categoryId: catBySlug["ad-finger-ring"].id,
+      categoryId: catByName["American Diamond"].id,
+      subcategoryId: subcatBySlug["ad-finger-ring"].id,
       price: 499,
       mrp: null,
       shortDesc:
@@ -386,11 +421,10 @@ async function main() {
     },
   ];
 
-  // IDs for variant logic
-  const ringsCatId = catBySlug["rings"].id;
-  const adRingsCatId = catBySlug["ad-finger-ring"].id;
-  const banglesGPCatId = catBySlug["bangles"].id;
-  const adBanglesCatId = catBySlug["ad-bangles"].id;
+  const ringsCatId = subcatBySlug["rings"].id;
+  const adRingsCatId = subcatBySlug["ad-finger-ring"].id;
+  const banglesGPCatId = subcatBySlug["bangles"].id;
+  const adBanglesCatId = subcatBySlug["ad-bangles"].id;
 
   for (const productData of productsData) {
     const { imageUrl, ...rest } = productData;
@@ -407,7 +441,7 @@ async function main() {
     });
 
     // Add size variants for rings
-    if (product.categoryId === ringsCatId || product.categoryId === adRingsCatId) {
+    if (product.subcategoryId === ringsCatId || product.subcategoryId === adRingsCatId) {
       await prisma.productVariant.createMany({
         data: [
           { productId: product.id, name: "Ring Size", value: "5", priceDelta: 0 },
@@ -419,7 +453,7 @@ async function main() {
     }
 
     // Add size variants for bangles
-    if (product.categoryId === banglesGPCatId || product.categoryId === adBanglesCatId) {
+    if (product.subcategoryId === banglesGPCatId || product.subcategoryId === adBanglesCatId) {
       await prisma.productVariant.createMany({
         data: [
           { productId: product.id, name: "Bangle Size", value: "2/2", priceDelta: 0 },

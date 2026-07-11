@@ -85,21 +85,21 @@ async function getHomepageData() {
           isPublished: true,
           category: {
             isActive: true,
-            group: { in: JEWELLERY_GROUPS },
+            name: { in: JEWELLERY_GROUPS },
           },
         },
         orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
         include: {
           images: { where: { isPrimary: true }, take: 1 },
-          category: { select: { name: true, group: true } },
+          category: { select: { name: true } },
         },
       }),
     ]);
 
-    // Group products by their category's group field
+    // Group products by their category's name field (which represents the group)
     const groupedMap: Record<string, typeof allGroupProducts> = {};
     for (const p of allGroupProducts) {
-      const grp = p.category.group ?? "Other";
+      const grp = p.category?.name ?? "Other";
       if (!groupedMap[grp]) groupedMap[grp] = [];
       if (groupedMap[grp].length < 8) groupedMap[grp].push(p);
     }

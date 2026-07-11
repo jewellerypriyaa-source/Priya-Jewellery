@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
   try {
     const where = {
       ...(all ? {} : { isPublished: true }),
-      ...(category && { category: { slug: category } }),
-      ...(group && { category: { group } }),
+      ...(category && { subcategory: { slug: category } }),
+      ...(group && { category: { name: group } }),
       ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
       ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
       ...(bestseller === "true" && { isBestseller: true }),
@@ -55,6 +55,7 @@ export async function GET(req: NextRequest) {
           isBestseller: true,
           isNewArrival: true,
           category: { select: { name: true, slug: true } },
+          subcategory: { select: { name: true, slug: true } },
           images: {
             where: { isPrimary: true },
             select: { url: true, altText: true, isPrimary: true },
@@ -68,7 +69,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       products: products.map((p) => ({
         ...p,
-        categoryName: p.category.name,
+        categoryName: p.category?.name,
+        subcategoryName: p.subcategory?.name,
         imageUrl: p.images[0]?.url ?? null,
         images: p.images,
       })),
@@ -97,6 +99,7 @@ export async function POST(req: NextRequest) {
       slug,
       sku,
       categoryId,
+      subcategoryId,
       price,
       mrp,
       shortDesc,
@@ -113,9 +116,9 @@ export async function POST(req: NextRequest) {
       variants = [], // [{ name, value, priceDelta, stockQty }]
     } = body;
 
-    if (!name || !slug || !categoryId || price === undefined) {
+    if (!name || !slug || !categoryId || !subcategoryId || price === undefined) {
       return NextResponse.json(
-        { error: "name, slug, categoryId and price are required" },
+        { error: "name, slug, categoryId, subcategoryId and price are required" },
         { status: 400 }
       );
     }
@@ -126,6 +129,7 @@ export async function POST(req: NextRequest) {
         slug,
         sku: sku || null,
         categoryId,
+        subcategoryId,
         price: parseFloat(price),
         mrp: mrp ? parseFloat(mrp) : null,
         shortDesc: shortDesc || null,

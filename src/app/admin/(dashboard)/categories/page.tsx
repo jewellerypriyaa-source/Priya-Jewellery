@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, Loader2, Upload, ToggleLeft, ToggleRight, X } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, Upload, X, FolderTree, Folder } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Category {
@@ -10,43 +10,65 @@ interface Category {
   slug: string;
   description: string | null;
   imageUrl: string | null;
-  group: string | null;
   displayOrder: number;
   isActive: boolean;
 }
 
-export default function AdminCategoriesPage() {
+interface Subcategory {
+  id: string;
+  name: string;
+  slug: string;
+  categoryId: string;
+  category?: { name: string };
+  description: string | null;
+  imageUrl: string | null;
+  displayOrder: number;
+  isActive: boolean;
+}
+
+export default function AdminCatalogStructurePage() {
+  const [activeTab, setActiveTab] = useState<"categories" | "subcategories">("categories");
+
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingItem, setEditingItem] = useState<Category | Subcategory | null>(null);
 
   // Form State
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [group, setGroup] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [displayOrder, setDisplayOrder] = useState("0");
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
-    fetchCategories();
+    fetchData();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/categories");
-      if (!res.ok) throw new Error("Failed to load categories");
-      const data = await res.json();
-      setCategories(data.categories);
+      const [catsRes, subcatsRes] = await Promise.all([
+        fetch("/api/categories"),
+        fetch("/api/subcategories")
+      ]);
+      
+      if (!catsRes.ok || !subcatsRes.ok) throw new Error("Failed to load catalog structure");
+      
+      const catsData = await catsRes.json();
+      const subcatsData = await subcatsRes.json();
+      
+      setCategories(catsData.categories);
+      setSubcategories(subcatsData.subcategories);
     } catch (err: any) {
-      toast.error(err.message || "Failed to fetch categories");
+      toast.error(err.message || "Failed to fetch data");
     } finally {
       setLoading(false);
     }
@@ -54,7 +76,7 @@ export default function AdminCategoriesPage() {
 
   const handleNameChange = (val: string) => {
     setName(val);
-    if (!editingCategory) {
+    if (!editingItem) {
       setSlug(
         val
           .toLowerCase()
@@ -65,26 +87,26 @@ export default function AdminCategoriesPage() {
   };
 
   const openAddModal = () => {
-    setEditingCategory(null);
+    setEditingItem(null);
     setName("");
     setSlug("");
     setDescription("");
     setImageUrl("");
-    setGroup("");
+    setCategoryId(categories.length > 0 ? categories[0].id : "");
     setDisplayOrder("0");
     setIsActive(true);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (cat: Category) => {
-    setEditingCategory(cat);
-    setName(cat.name);
-    setSlug(cat.slug);
-    setDescription(cat.description ?? "");
-    setImageUrl(cat.imageUrl ?? "");
-    setGroup(cat.group ?? "");
-    setDisplayOrder(cat.displayOrder.toString());
-    setIsActive(cat.isActive);
+  const openEditModal = (item: any) => {
+    setEditingItem(item);
+    setName(item.name);
+    setSlug(item.slug);
+    setDescription(item.description ?? "");
+    setImageUrl(item.imageUrl ?? "");
+    if (activeTab === "subcategories") setCategoryId(item.categoryId ?? "");
+    setDisplayOrder(item.displayOrder.toString());
+    setIsActive(item.isActive);
     setIsModalOpen(true);
   };
 
@@ -95,7 +117,7 @@ export default function AdminCategoriesPage() {
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("folder", "categories");
+    formData.append("folder", activeTab);
 
     try {
       const res = await fetch("/api/upload", {
@@ -124,20 +146,28 @@ export default function AdminCategoriesPage() {
       return toast.error("Name and slug are required");
     }
 
+    if (activeTab === "subcategories" && !categoryId) {
+      return toast.error("Please select a parent category");
+    }
+
     setSaving(true);
-    const payload = {
+    const payload: any = {
       name,
       slug,
       description: description || null,
       imageUrl: imageUrl || null,
-      group: group || null,
       displayOrder: parseInt(displayOrder) || 0,
       isActive,
     };
 
+    if (activeTab === "subcategories") {
+      payload.categoryId = categoryId;
+    }
+
     try {
-      const url = editingCategory ? `/api/categories/${editingCategory.id}` : "/api/categories";
-      const method = editingCategory ? "PUT" : "POST";
+      const endpoint = activeTab === "categories" ? "/api/categories" : "/api/subcategories";
+      const url = editingItem ? `${endpoint}/${editingItem.id}` : endpoint;
+      const method = editingItem ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
@@ -147,59 +177,63 @@ export default function AdminCategoriesPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error ?? "Failed to save category");
+        throw new Error(data.error ?? "Failed to save");
       }
 
-      toast.success(editingCategory ? "Category updated!" : "Category created!");
+      toast.success(editingItem ? "Updated successfully!" : "Created successfully!");
       setIsModalOpen(false);
-      fetchCategories();
+      fetchData();
     } catch (err: any) {
-      toast.error(err.message || "Failed to save category");
+      toast.error(err.message || "Failed to save");
     } finally {
       setSaving(false);
     }
   };
 
-  const toggleStatus = async (cat: Category) => {
+  const toggleStatus = async (item: any) => {
     try {
-      const res = await fetch(`/api/categories/${cat.id}`, {
+      const endpoint = activeTab === "categories" ? "/api/categories" : "/api/subcategories";
+      const res = await fetch(`${endpoint}/${item.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isActive: !cat.isActive }),
+        body: JSON.stringify({ isActive: !item.isActive }),
       });
 
       if (!res.ok) throw new Error("Failed to update status");
 
-      toast.success(`${cat.name} status updated`);
-      fetchCategories();
+      toast.success(`${item.name} status updated`);
+      fetchData();
     } catch (err: any) {
-      toast.error(err.message || "Failed to update category status");
+      toast.error(err.message || "Failed to update status");
     }
   };
 
-  const handleDelete = async (cat: Category) => {
-    if (!confirm(`Are you sure you want to delete ${cat.name}? This will affect product categories.`)) return;
+  const handleDelete = async (item: any) => {
+    if (!confirm(`Are you sure you want to delete ${item.name}? This will affect products linked to it.`)) return;
 
     try {
-      const res = await fetch(`/api/categories/${cat.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete category");
+      const endpoint = activeTab === "categories" ? "/api/categories" : "/api/subcategories";
+      const res = await fetch(`${endpoint}/${item.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete");
 
-      toast.success("Category deleted");
-      fetchCategories();
+      toast.success("Deleted successfully");
+      fetchData();
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete category");
+      toast.error(err.message || "Failed to delete");
     }
   };
+
+  const listToRender = activeTab === "categories" ? categories : subcategories;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold" style={{ color: "#3d0b15" }}>
-            Categories
+            Catalog Structure
           </h1>
           <p className="text-gray-500 text-sm mt-0.5">
-            Manage product collections and navigation structure
+            Manage your main categories and their subcategories
           </p>
         </div>
         <button
@@ -207,7 +241,28 @@ export default function AdminCategoriesPage() {
           className="btn-maroon flex items-center gap-2 text-sm px-5 py-2.5"
         >
           <Plus size={16} />
-          Add Category
+          {activeTab === "categories" ? "Add Category" : "Add Subcategory"}
+        </button>
+      </div>
+
+      <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab("categories")}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+            activeTab === "categories" ? "bg-white text-gold-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <Folder size={16} />
+          Main Categories (Level 1)
+        </button>
+        <button
+          onClick={() => setActiveTab("subcategories")}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
+            activeTab === "subcategories" ? "bg-white text-gold-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          <FolderTree size={16} />
+          Subcategories (Level 2)
         </button>
       </div>
 
@@ -215,14 +270,14 @@ export default function AdminCategoriesPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 size={32} className="animate-spin text-gold-600" />
         </div>
-      ) : categories.length === 0 ? (
+      ) : listToRender.length === 0 ? (
         <div className="text-center py-20 bg-white border border-dashed rounded-xl p-8">
-          <p className="text-gray-500 text-sm">No categories defined yet.</p>
+          <p className="text-gray-500 text-sm">No {activeTab} defined yet.</p>
           <button
             onClick={openAddModal}
             className="mt-4 px-4 py-2 bg-gold-600 hover:bg-gold-700 text-white rounded-lg text-xs font-semibold"
           >
-            Create First Category
+            Create First {activeTab === "categories" ? "Category" : "Subcategory"}
           </button>
         </div>
       ) : (
@@ -231,8 +286,8 @@ export default function AdminCategoriesPage() {
             <thead>
               <tr className="border-b bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-500">
                 <th className="px-6 py-4">Image</th>
-                <th className="px-6 py-4">Category Name</th>
-                <th className="px-6 py-4">Group</th>
+                <th className="px-6 py-4">Name</th>
+                {activeTab === "subcategories" && <th className="px-6 py-4">Parent Category</th>}
                 <th className="px-6 py-4">Slug</th>
                 <th className="px-6 py-4 text-center">Order</th>
                 <th className="px-6 py-4 text-center">Status</th>
@@ -240,13 +295,13 @@ export default function AdminCategoriesPage() {
               </tr>
             </thead>
             <tbody className="divide-y text-sm">
-              {categories.map((cat) => (
-                <tr key={cat.id} className="hover:bg-gray-50/50 transition-colors">
+              {listToRender.map((item: any) => (
+                <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-3">
-                    {cat.imageUrl ? (
+                    {item.imageUrl ? (
                       <img
-                        src={cat.imageUrl}
-                        alt={cat.name}
+                        src={item.imageUrl}
+                        alt={item.name}
                         className="w-10 h-10 object-cover rounded-lg border bg-gray-50"
                       />
                     ) : (
@@ -255,37 +310,23 @@ export default function AdminCategoriesPage() {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-3 font-semibold text-gray-800">{cat.name}</td>
-                  <td className="px-6 py-3">
-                    {cat.group ? (
-                      <span
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
-                        style={{
-                          background:
-                            cat.group === "Gold Plated" ? "#fef3c7" :
-                            cat.group === "Anti Tarnish" ? "#e0f2fe" :
-                            cat.group === "American Diamond" ? "#ede9fe" : "#f3f4f6",
-                          color:
-                            cat.group === "Gold Plated" ? "#92400e" :
-                            cat.group === "Anti Tarnish" ? "#0369a1" :
-                            cat.group === "American Diamond" ? "#5b21b6" : "#6b7280",
-                        }}
-                      >
-                        {cat.group}
+                  <td className="px-6 py-3 font-semibold text-gray-800">{item.name}</td>
+                  {activeTab === "subcategories" && (
+                    <td className="px-6 py-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-100 text-gray-700 border">
+                        {item.category?.name || "Unknown"}
                       </span>
-                    ) : (
-                      <span className="text-gray-300 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-gray-500 text-xs font-mono">{cat.slug}</td>
-                  <td className="px-6 py-3 text-center text-gray-700">{cat.displayOrder}</td>
+                    </td>
+                  )}
+                  <td className="px-6 py-3 text-gray-500 text-xs font-mono">{item.slug}</td>
+                  <td className="px-6 py-3 text-center text-gray-700">{item.displayOrder}</td>
                   <td className="px-6 py-3 text-center">
                     <button
-                      onClick={() => toggleStatus(cat)}
+                      onClick={() => toggleStatus(item)}
                       className="inline-flex items-center justify-center focus:outline-none transition-colors"
-                      title={cat.isActive ? "Deactivate" : "Activate"}
+                      title={item.isActive ? "Deactivate" : "Activate"}
                     >
-                      {cat.isActive ? (
+                      {item.isActive ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
                           Active
                         </span>
@@ -299,16 +340,16 @@ export default function AdminCategoriesPage() {
                   <td className="px-6 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        onClick={() => openEditModal(cat)}
+                        onClick={() => openEditModal(item)}
                         className="p-1.5 rounded-lg text-gray-500 hover:text-gold-600 hover:bg-gold-50/50 transition-colors"
-                        title="Edit category"
+                        title="Edit"
                       >
                         <Edit size={16} />
                       </button>
                       <button
-                        onClick={() => handleDelete(cat)}
+                        onClick={() => handleDelete(item)}
                         className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50/50 transition-colors"
-                        title="Delete category"
+                        title="Delete"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -324,7 +365,7 @@ export default function AdminCategoriesPage() {
       {/* Modal Dialog */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1"
@@ -334,17 +375,17 @@ export default function AdminCategoriesPage() {
 
             <div>
               <h3 className="font-serif text-xl font-bold" style={{ color: "#3d0b15" }}>
-                {editingCategory ? "Edit Category" : "Add Category"}
+                {editingItem ? `Edit ${activeTab === 'categories' ? 'Category' : 'Subcategory'}` : `Add ${activeTab === 'categories' ? 'Category' : 'Subcategory'}`}
               </h3>
               <p className="text-gray-500 text-xs mt-0.5">
-                Define the collection name, description, and visibility parameters.
+                Define the properties and visibility parameters.
               </p>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                  Category Name *
+                  Name *
                 </label>
                 <input
                   type="text"
@@ -352,7 +393,7 @@ export default function AdminCategoriesPage() {
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm"
-                  placeholder="E.g. Earrings"
+                  placeholder={activeTab === 'categories' ? "E.g. Gold Plated" : "E.g. Necklace"}
                 />
               </div>
 
@@ -367,7 +408,7 @@ export default function AdminCategoriesPage() {
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm bg-gray-50 font-mono"
-                    placeholder="earrings"
+                    placeholder="url-friendly-slug"
                   />
                 </div>
 
@@ -385,21 +426,26 @@ export default function AdminCategoriesPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                  Jewellery Group
-                </label>
-                <select
-                  value={group}
-                  onChange={(e) => setGroup(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm"
-                >
-                  <option value="">— No Group —</option>
-                  <option value="Gold Plated">Gold Plated (1.5g Gold)</option>
-                  <option value="Anti Tarnish">Anti Tarnish</option>
-                  <option value="American Diamond">American Diamond</option>
-                </select>
-              </div>
+              {activeTab === "subcategories" && (
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Parent Category *
+                  </label>
+                  <select
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500 text-sm"
+                  >
+                    <option value="" disabled>Select a Main Category</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">
@@ -486,7 +532,7 @@ export default function AdminCategoriesPage() {
                   className="btn-maroon flex items-center gap-1.5 text-xs px-4 py-2"
                 >
                   {saving && <Loader2 size={12} className="animate-spin" />}
-                  {editingCategory ? "Save Changes" : "Create Category"}
+                  {editingItem ? "Save Changes" : "Create"}
                 </button>
               </div>
             </form>
