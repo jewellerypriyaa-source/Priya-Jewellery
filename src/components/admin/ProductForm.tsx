@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 interface Category {
   id: string;
   name: string;
+  group?: string | null;
 }
 
 interface ProductImage {
