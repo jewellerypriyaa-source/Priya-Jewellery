@@ -380,7 +380,6 @@ export default function ProductForm({ categories, subcategories, initialData }: 
                   <option value="OUT_OF_STOCK">Out of Stock</option>
                 </select>
               </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>

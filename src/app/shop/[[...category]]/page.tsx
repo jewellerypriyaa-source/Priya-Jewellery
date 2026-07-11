@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const cat = await prisma.subcategory.findUnique({ where: { slug: categorySlug } });
     if (cat) {
       return {
-        title: cat.metaTitle ?? `${cat.name} Jewellery`,
-        description: cat.metaDesc ?? cat.description ?? `Shop ${cat.name} at Priyaa Jewellery.`,
+        title: `${cat.name} Jewellery`,
+        description: cat.description ?? `Shop ${cat.name} at Priyaa Jewellery.`,
       };
     }
   }
