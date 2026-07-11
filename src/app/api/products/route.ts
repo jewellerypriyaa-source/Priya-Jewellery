@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const category = searchParams.get("category");
+  const group = searchParams.get("group");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const bestseller = searchParams.get("bestseller");
@@ -21,6 +22,7 @@ export async function GET(req: NextRequest) {
     const where = {
       ...(all ? {} : { isPublished: true }),
       ...(category && { category: { slug: category } }),
+      ...(group && { category: { group } }),
       ...(minPrice && { price: { gte: parseFloat(minPrice) } }),
       ...(maxPrice && { price: { lte: parseFloat(maxPrice) } }),
       ...(bestseller === "true" && { isBestseller: true }),

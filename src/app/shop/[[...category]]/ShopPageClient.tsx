@@ -43,6 +43,7 @@ interface ShopPageClientProps {
     maxPrice?: string;
     sort?: string;
     bestseller?: string;
+    group?: string;
     page?: string;
   };
 }
@@ -73,6 +74,7 @@ export default function ShopPageClient({
   const [minPrice, setMinPrice] = useState(initialSearchParams.minPrice ?? "");
   const [maxPrice, setMaxPrice] = useState(initialSearchParams.maxPrice ?? "");
   const [bestseller, setBestseller] = useState(initialSearchParams.bestseller === "true");
+  const [group] = useState(initialSearchParams.group ?? "");
   const [page, setPage] = useState(parseInt(initialSearchParams.page ?? "1"));
 
   const fetchProducts = useCallback(async () => {
@@ -80,6 +82,7 @@ export default function ShopPageClient({
     try {
       const params = new URLSearchParams();
       if (categorySlug) params.set("category", categorySlug);
+      if (group) params.set("group", group);
       if (minPrice) params.set("minPrice", minPrice);
       if (maxPrice) params.set("maxPrice", maxPrice);
       if (bestseller) params.set("bestseller", "true");
@@ -97,7 +100,7 @@ export default function ShopPageClient({
     } finally {
       setLoading(false);
     }
-  }, [categorySlug, minPrice, maxPrice, bestseller, sort, page]);
+  }, [categorySlug, group, minPrice, maxPrice, bestseller, sort, page]);
 
   useEffect(() => {
     fetchProducts();
@@ -117,7 +120,7 @@ export default function ShopPageClient({
     setPage(1);
   }
 
-  const pageTitle = categoryInfo?.name ?? "All Jewellery";
+  const pageTitle = categoryInfo?.name ?? (group ? group : "All Jewellery");
 
   return (
     <div>

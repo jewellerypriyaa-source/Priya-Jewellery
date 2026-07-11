@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 // Always fetch live data from Supabase — never serve a stale build-time snapshot
 export const dynamic = "force-dynamic";
 import HeroBanner from "@/components/home/HeroBanner";
-import ShopByCategory from "@/components/home/ShopByCategory";
+import CategoryGroupsSection from "@/components/home/CategoryGroupsSection";
 import ProductGrid from "@/components/home/ProductGrid";
 import ShopByBudget from "@/components/home/ShopByBudget";
 import TrustBadges from "@/components/home/TrustBadges";
@@ -15,7 +15,7 @@ import InstagramGallery from "@/components/home/InstagramGallery";
 export const metadata: Metadata = {
   title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
   description:
-    "Discover beautiful handcrafted jewellery — necklaces, earrings, bangles, rings, chokers and bridal sets. Order easily on WhatsApp. Free shipping on orders above ₹1499.",
+    "Discover beautiful handcrafted jewellery — Gold Plated, Anti Tarnish, American Diamond, Polki Kundan, Bridal, German Silver & Oxidised collections. Order easily on WhatsApp. Free shipping on orders above ₹1499.",
   openGraph: {
     title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
     description:
@@ -23,36 +23,33 @@ export const metadata: Metadata = {
   },
 };
 
+// The 7 jewellery groups shown on the homepage, in this order
+const JEWELLERY_GROUPS = [
+  "Gold Plated",
+  "Anti Tarnish",
+  "American Diamond",
+  "Polki Kundan",
+  "Bridal",
+  "German Silver",
+  "Oxidised",
+];
+
 async function getHomepageData() {
   try {
     const [
       heroBanners,
-      categories,
-      newArrivals,
       bestsellers,
       budgetRanges,
       trustBadges,
       testimonials,
       instagramPosts,
       settings,
+      // Fetch all published products with their category (which has a group)
+      allGroupProducts,
     ] = await Promise.all([
       prisma.heroBanner.findMany({
         where: { isActive: true },
         orderBy: { displayOrder: "asc" },
-      }),
-      prisma.category.findMany({
-        where: { isActive: true },
-        orderBy: { displayOrder: "asc" },
-        select: { id: true, name: true, slug: true, imageUrl: true },
-      }),
-      prisma.product.findMany({
-        where: { isPublished: true, isNewArrival: true },
-        orderBy: { createdAt: "desc" },
-        take: 8,
-        include: {
-          images: { where: { isPrimary: true }, take: 1 },
-          category: { select: { name: true } },
-        },
       }),
       prisma.product.findMany({
         where: { isPublished: true, isBestseller: true },
@@ -82,16 +79,50 @@ async function getHomepageData() {
         take: 9,
       }),
       prisma.settings.findUnique({ where: { id: "main" } }),
+      // Fetch up to 8 products per group
+      prisma.product.findMany({
+        where: {
+          isPublished: true,
+          category: {
+            isActive: true,
+            group: { in: JEWELLERY_GROUPS },
+          },
+        },
+        orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+        include: {
+          images: { where: { isPrimary: true }, take: 1 },
+          category: { select: { name: true, group: true } },
+        },
+      }),
     ]);
+
+    // Group products by their category's group field
+    const groupedMap: Record<string, typeof allGroupProducts> = {};
+    for (const p of allGroupProducts) {
+      const grp = p.category.group ?? "Other";
+      if (!groupedMap[grp]) groupedMap[grp] = [];
+      if (groupedMap[grp].length < 8) groupedMap[grp].push(p);
+    }
+
+    // Build the groups array in the defined order
+    const categoryGroups = JEWELLERY_GROUPS.map((groupName) => ({
+      group: groupName,
+      products: (groupedMap[groupName] ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        price: p.price,
+        mrp: p.mrp,
+        stockStatus: p.stockStatus,
+        isBestseller: p.isBestseller,
+        isNewArrival: p.isNewArrival,
+        images: p.images,
+      })),
+    }));
 
     return {
       heroBanners,
-      categories,
-      newArrivals: newArrivals.map((p) => ({
-        ...p,
-        categoryName: p.category.name,
-        images: p.images,
-      })),
+      categoryGroups,
       bestsellers: bestsellers.map((p) => ({
         ...p,
         categoryName: p.category.name,
@@ -107,8 +138,7 @@ async function getHomepageData() {
     console.error("Homepage data fetch error:", error);
     return {
       heroBanners: [],
-      categories: [],
-      newArrivals: [],
+      categoryGroups: JEWELLERY_GROUPS.map((group) => ({ group, products: [] })),
       bestsellers: [],
       budgetRanges: [],
       trustBadges: [],
@@ -122,8 +152,7 @@ async function getHomepageData() {
 export default async function HomePage() {
   const {
     heroBanners,
-    categories,
-    newArrivals,
+    categoryGroups,
     bestsellers,
     budgetRanges,
     trustBadges,
@@ -148,25 +177,30 @@ export default async function HomePage() {
       {/* Trust Badges */}
       {trustBadges.length > 0 && <TrustBadges badges={trustBadges} />}
 
-      {/* Shop by Category */}
-      {categories.length > 0 && <ShopByCategory categories={categories} />}
+      {/* ── SHOP BY COLLECTION ────────────────────────────────────── */}
+      <div className="py-6 px-4 max-w-7xl mx-auto text-center">
+        <p className="text-xs tracking-[0.3em] uppercase mb-1" style={{ color: "#c9a84c" }}>
+          Our Collections
+        </p>
+        <h2 className="font-serif text-3xl sm:text-4xl font-bold" style={{ color: "#1a0a0e" }}>
+          Shop by Collection
+        </h2>
+        <div className="flex items-center justify-center gap-3 mt-3">
+          <div className="h-px w-16 bg-gradient-to-r from-transparent to-gold-400" style={{ background: "linear-gradient(to right, transparent, #c9a84c)" }} />
+          <span style={{ color: "#c9a84c" }}>✦</span>
+          <div className="h-px w-16" style={{ background: "linear-gradient(to left, transparent, #c9a84c)" }} />
+        </div>
+        <p className="text-gray-500 text-sm mt-2">
+          7 curated jewellery lines • Something special for every occasion
+        </p>
+      </div>
 
-      {/* New Arrivals */}
-      {newArrivals.length > 0 && (
-        <section className="py-14" style={{ background: "#fbf6f0" }}>
-          <ProductGrid
-            products={newArrivals}
-            title="New Arrivals"
-            subtitle="Fresh additions to our collection"
-            viewAllHref="/shop?sort=newest"
-          />
-        </section>
-      )}
+      <CategoryGroupsSection groups={categoryGroups} />
+
+      {/* ─────────────────────────────────────────────────────────── */}
 
       {/* Shop by Budget */}
-      {budgetRanges.length > 0 && (
-        <ShopByBudget ranges={budgetRanges} />
-      )}
+      {budgetRanges.length > 0 && <ShopByBudget ranges={budgetRanges} />}
 
       {/* Bestsellers */}
       {bestsellers.length > 0 && (
@@ -184,14 +218,10 @@ export default async function HomePage() {
       )}
 
       {/* Instagram Shoppable Gallery */}
-      {instagramPosts.length > 0 && (
-        <InstagramGallery posts={instagramPosts} />
-      )}
+      {instagramPosts.length > 0 && <InstagramGallery posts={instagramPosts} />}
 
       {/* Testimonials */}
-      {testimonials.length > 0 && (
-        <Testimonials testimonials={testimonials} />
-      )}
+      {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
 
       {/* WhatsApp CTA Banner */}
       <section
@@ -204,9 +234,7 @@ export default async function HomePage() {
           <p className="text-xs tracking-[0.3em] uppercase mb-2" style={{ color: "#c9a84c" }}>
             WhatsApp First Shopping
           </p>
-          <h2
-            className="font-serif text-3xl md:text-4xl font-bold text-white mb-4"
-          >
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
             Ready to Order? Chat with Us!
           </h2>
           <p className="text-gray-300 mb-8">

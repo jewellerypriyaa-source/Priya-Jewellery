@@ -10,6 +10,7 @@ interface PageProps {
     maxPrice?: string;
     sort?: string;
     bestseller?: string;
+    group?: string;
     page?: string;
     q?: string;
   }>;
