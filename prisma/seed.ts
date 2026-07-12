@@ -82,7 +82,7 @@ async function main() {
   );
   const admin = await prisma.admin.create({
     data: {
-      email: process.env.ADMIN_EMAIL ?? "admin@priyajewellery.com",
+      email: process.env.ADMIN_EMAIL ?? "info@priyajewellery.com",
       passwordHash,
       name: "Priya Admin",
     },
@@ -102,8 +102,8 @@ async function main() {
       announcementText:
         "✨ Free shipping in-city on orders above Rs.1499 | New Arrivals Every Week | Call: +91 7367997766",
       phone: "+91 7367997766",
-      email: "priyajewellery@gmail.com",
-      address: "Priya Jewellery Store, Main Market, Your City",
+      email: "info@priyajewellery.com",
+      address: "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",
       businessHours: "Mon–Sat: 10am – 7pm",
     },
   });
