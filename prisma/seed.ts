@@ -96,6 +96,7 @@ async function main() {
       instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
+      logoUrl: "/logo.jpg",
     },
     create: {
       id: "main",
@@ -112,6 +113,7 @@ async function main() {
       instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
+      logoUrl: "/logo.jpg",
     },
   });
   console.log("✅ Settings upserted");
