@@ -11,6 +11,7 @@
 import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase";
 import { v4 as uuid } from "uuid";
 import path from "path";
+import sharp from "sharp";
 
 export interface SavedFile {
   url: string;      // Full public CDN URL (e.g. https://….supabase.co/storage/v1/object/public/…)
@@ -26,12 +27,28 @@ export async function saveFile(
   folder: string = "products"
 ): Promise<SavedFile> {
   const ext = path.extname(originalName).toLowerCase() || ".jpg";
-  const filename = `${folder}/${uuid()}${ext}`;
+  
+  let processedBuffer = buffer;
+  let finalExt = ext;
+  
+  const isImage = [".jpg", ".jpeg", ".png", ".webp"].includes(ext);
+  if (isImage) {
+    try {
+      processedBuffer = await sharp(buffer)
+        .webp({ quality: 80 })
+        .toBuffer();
+      finalExt = ".webp";
+    } catch (err) {
+      console.error("Error converting image to webp, uploading original:", err);
+    }
+  }
+
+  const filename = `${folder}/${uuid()}${finalExt}`;
 
   const { error } = await supabaseAdmin.storage
     .from(STORAGE_BUCKET)
-    .upload(filename, buffer, {
-      contentType: getMimeType(ext),
+    .upload(filename, processedBuffer, {
+      contentType: getMimeType(finalExt),
       upsert: false,
     });
 

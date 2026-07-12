@@ -4,6 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 interface ProductItem {
   id: string;
@@ -156,6 +161,7 @@ function ProductMiniCard({ product }: { product: ProductItem }) {
 
 function GroupRow({ group, products }: { group: string; products: ProductItem[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
   const meta = GROUP_META[group] ?? {
     accent: "#c9a84c",
     bg: "#fbf6f0",
@@ -168,10 +174,30 @@ function GroupRow({ group, products }: { group: string; products: ProductItem[] 
     scrollRef.current.scrollBy({ left: dir === "right" ? 220 : -220, behavior: "smooth" });
   };
 
+  // Staggered reveal of each category section on scroll
+  useGSAP(() => {
+    gsap.fromTo(
+      rowRef.current,
+      { opacity: 0, y: 25 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.9,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: rowRef.current,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, { scope: rowRef });
+
   const groupSlug = group.toLowerCase().replace(/\s+/g, "+");
 
   return (
     <section
+      ref={rowRef}
       className="py-12 px-0"
       style={{ background: meta.bg }}
       id={`group-section-${group.toLowerCase().replace(/\s+/g, "-")}`}

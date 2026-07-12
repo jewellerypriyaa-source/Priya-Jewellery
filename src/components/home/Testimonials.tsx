@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Star } from "lucide-react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 interface Testimonial {
   id: string;
@@ -36,12 +41,43 @@ function StarRating({ rating }: { rating: number }) {
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
   const [current, setCurrent] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
   const next = () => setCurrent((c) => (c + 1) % testimonials.length);
 
+  // Section Scroll reveal
+  useGSAP(() => {
+    gsap.fromTo(
+      containerRef.current,
+      { opacity: 0, y: 25 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, { scope: containerRef });
+
+  // Testimonial card content swap fade
+  useGSAP(() => {
+    gsap.fromTo(
+      cardRef.current,
+      { opacity: 0.25, scale: 0.98 },
+      { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
+    );
+  }, { dependencies: [current], scope: cardRef });
+
   return (
     <section
+      ref={containerRef}
       className="py-16 px-4"
       style={{ background: "linear-gradient(135deg, #1a0a0e, #3d0b15)" }}
     >
@@ -55,6 +91,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
 
         {/* Testimonial Card */}
         <div
+          ref={cardRef}
           className="rounded-2xl p-8 md:p-10 mb-8"
           style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(201,168,76,0.2)" }}
         >

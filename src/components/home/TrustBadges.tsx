@@ -1,3 +1,12 @@
+"use client";
+
+import { useRef } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
 interface Badge {
   id: string;
   icon: string;
@@ -9,8 +18,30 @@ interface TrustBadgesProps {
 }
 
 export default function TrustBadges({ badges }: TrustBadgesProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    gsap.fromTo(
+      containerRef.current?.querySelectorAll(".badge-item") || null,
+      { opacity: 0, y: 15 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 92%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, { scope: containerRef });
+
   return (
     <div
+      ref={containerRef}
       className="py-6 px-4"
       style={{
         background: "linear-gradient(135deg, #3d0b15, #6b1a2a)",
@@ -23,7 +54,7 @@ export default function TrustBadges({ badges }: TrustBadgesProps) {
           {badges.map((badge) => (
             <div
               key={badge.id}
-              className="flex items-center justify-center gap-3 text-center sm:text-left py-2 px-3 rounded-lg"
+              className="badge-item flex items-center justify-center gap-3 text-center sm:text-left py-2 px-3 rounded-lg"
               style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(201,168,76,0.1)" }}
             >
               <span className="text-gold-400 text-lg">✦</span>

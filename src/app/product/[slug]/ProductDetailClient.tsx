@@ -3,11 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, Share2, Copy, Star, ChevronRight } from "lucide-react";
+import { Heart, Share2, Copy, Star, ChevronRight, ChevronDown } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { buildOrderUrl, buildNotifyUrl } from "@/lib/whatsapp";
 import ProductCard from "@/components/product/ProductCard";
 import toast from "react-hot-toast";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 interface ProductVariant {
   id: string;
@@ -109,6 +113,23 @@ export default function ProductDetailClient({
   });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>("details");
+
+  // Gallery image swap crossfade transition
+  useGSAP(() => {
+    const mainImg = document.querySelector(".product-detail-main-image");
+    if (mainImg) {
+      gsap.fromTo(
+        mainImg,
+        { opacity: 0.15 },
+        { opacity: 1, duration: 0.45, ease: "power2.out" }
+      );
+    }
+  }, { dependencies: [selectedImage] });
+
+  const toggleAccordion = (name: string) => {
+    setOpenAccordion(openAccordion === name ? null : name);
+  };
 
   const { isWishlisted, toggleItem } = useWishlistStore();
   const wishlisted = isWishlisted(product.slug);
@@ -244,7 +265,7 @@ export default function ProductDetailClient({
                   src={product.images[selectedImage].url}
                   alt={product.images[selectedImage].altText ?? product.name}
                   fill
-                  className="object-cover"
+                  className="object-cover product-detail-main-image"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
@@ -313,7 +334,7 @@ export default function ProductDetailClient({
           </div>
 
           {/* RIGHT — Product Info */}
-          <div>
+          <div className="sticky-sidebar-desktop">
             {/* Category & Name */}
             <Link
               href={`/shop/${product.category.slug}`}
@@ -524,24 +545,104 @@ export default function ProductDetailClient({
           </div>
         </div>
 
-        {/* Full Description */}
-        {product.description && (
-          <div
-            className="mt-12 p-6 md:p-8 rounded-2xl"
-            style={{ background: "white", border: "1px solid rgba(201,168,76,0.15)" }}
-          >
-            <h2
-              className="font-serif text-2xl font-semibold mb-4"
-              style={{ color: "#3d0b15" }}
+        {/* Specifications Accordions */}
+        <div className="mt-12 space-y-2">
+          {/* Accordion 1: Details */}
+          {product.description && (
+            <div className="accordion-wrapper">
+              <button
+                className="accordion-trigger"
+                onClick={() => toggleAccordion("details")}
+                aria-expanded={openAccordion === "details"}
+              >
+                <span>Product Details</span>
+                <ChevronDown
+                  size={18}
+                  className="accordion-icon"
+                  style={{
+                    transform: openAccordion === "details" ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
+                />
+              </button>
+              <div
+                className="accordion-content"
+                style={{
+                  height: openAccordion === "details" ? "auto" : "0px",
+                }}
+              >
+                <div className="accordion-content-inner">
+                  <div
+                    className="rich-text text-sm md:text-base"
+                    dangerouslySetInnerHTML={{ __html: product.description }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Accordion 2: Care Instructions */}
+          <div className="accordion-wrapper">
+            <button
+              className="accordion-trigger"
+              onClick={() => toggleAccordion("care")}
+              aria-expanded={openAccordion === "care"}
             >
-              Product Details
-            </h2>
+              <span>Care Instructions</span>
+              <ChevronDown
+                size={18}
+                className="accordion-icon"
+                style={{
+                  transform: openAccordion === "care" ? "rotate(180deg)" : "rotate(0deg)",
+                }}
+              />
+            </button>
             <div
-              className="rich-text"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
+              className="accordion-content"
+              style={{
+                height: openAccordion === "care" ? "auto" : "0px",
+              }}
+            >
+              <div className="accordion-content-inner text-sm md:text-base">
+                <p className="mb-2">To preserve the brilliant lustre of your Priyaa Fine Jewellery:</p>
+                <ul className="list-disc pl-5 space-y-1.5 mt-2">
+                  <li>Avoid direct contact with water, sweat, perfumes, and hairsprays.</li>
+                  <li>Remove jewellery before washing hands, swimming, or exercising.</li>
+                  <li>Clean gently with a soft, clean dry microfibre cloth after wear.</li>
+                  <li>Store in an airtight container or original velvet box to prevent oxidation.</li>
+                </ul>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Accordion 3: Shipping & Returns */}
+          <div className="accordion-wrapper">
+            <button
+              className="accordion-trigger"
+              onClick={() => toggleAccordion("shipping")}
+              aria-expanded={openAccordion === "shipping"}
+            >
+              <span>Shipping & Returns</span>
+              <ChevronDown
+                size={18}
+                className="accordion-icon"
+                style={{
+                  transform: openAccordion === "shipping" ? "rotate(180deg)" : "rotate(0deg)",
+                }}
+              />
+            </button>
+            <div
+              className="accordion-content"
+              style={{
+                height: openAccordion === "shipping" ? "auto" : "0px",
+              }}
+            >
+              <div className="accordion-content-inner text-sm md:text-base">
+                <p className="mb-2"><strong>Standard Delivery:</strong> Dispatched within 2–3 business days. Free shipping in-city on orders above ₹1,499.</p>
+                <p><strong>Returns Policy:</strong> Defective items are eligible for exchange/return. Please contact our support team on WhatsApp within 7 days of receiving your package.</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Customer Reviews */}
         <div className="mt-12">

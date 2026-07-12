@@ -4,6 +4,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
 
 interface Slide {
   id: string;
@@ -22,6 +26,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
   const [current, setCurrent] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const goNext = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
@@ -30,6 +35,76 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
   const goPrev = () => {
     setCurrent((c) => (c - 1 + slides.length) % slides.length);
   };
+
+  // GSAP Cinematic Zoom for the active slide's background image
+  useGSAP(() => {
+    const activeImage = containerRef.current?.querySelector(`.hero-slide-${current} img`);
+    if (activeImage) {
+      gsap.fromTo(
+        activeImage,
+        { scale: 1.08 },
+        { scale: 1, duration: 5.5, ease: "power2.out" }
+      );
+    }
+  }, { dependencies: [current], scope: containerRef });
+
+  // GSAP Premium Text & CTA Reveal
+  useGSAP(() => {
+    const title = containerRef.current?.querySelector(".hero-title") || null;
+    const subtitle = containerRef.current?.querySelector(".hero-subtitle") || null;
+    const actions = containerRef.current?.querySelector(".hero-actions") || null;
+    const accentLine = containerRef.current?.querySelector(".hero-accent-line") || null;
+
+    if (!title) return;
+
+    // Reset GSAP tweens
+    gsap.killTweensOf([title, subtitle, actions, accentLine]);
+
+    // Split text into words wrapped in mask spans for the reveal
+    const titleText = title.textContent || "";
+    const words = titleText.split(" ");
+    title.innerHTML = words
+      .map(
+        (word) =>
+          `<span class="hero-title-wrapper"><span class="hero-title-word mr-3">${word}</span></span>`
+      )
+      .join(" ");
+
+    const wordElements = title.querySelectorAll(".hero-title-word");
+
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+    tl.fromTo(
+      accentLine,
+      { scaleX: 0, transformOrigin: "left center" },
+      { scaleX: 1, duration: 0.8 }
+    )
+      .fromTo(
+        wordElements,
+        { y: "110%", opacity: 0 },
+        { y: "0%", opacity: 1, duration: 1.2, stagger: 0.06 },
+        "-=0.5"
+      )
+      .fromTo(
+        subtitle,
+        { y: 15, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.0, ease: "power3.out" },
+        "-=0.8"
+      )
+      .fromTo(
+        actions,
+        { y: 15, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+        "-=0.8"
+      );
+
+    // Subtle micro-floating to add airiness
+    gsap.fromTo(
+      containerRef.current?.querySelector(".hero-text-block") || null,
+      { y: 0 },
+      { y: -6, duration: 3.5, ease: "sine.inOut", repeat: -1, yoyo: true }
+    );
+  }, { dependencies: [current], scope: containerRef });
 
   useEffect(() => {
     if (!isPlaying || slides.length <= 1) return;
@@ -67,6 +142,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
 
   return (
     <div
+      ref={containerRef}
       className="relative h-[60vh] md:h-[85vh] overflow-hidden"
       onMouseEnter={() => setIsPlaying(false)}
       onMouseLeave={() => setIsPlaying(true)}
@@ -75,7 +151,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
       {slides.map((s, i) => (
         <div
           key={s.id}
-          className="absolute inset-0 transition-opacity duration-1000"
+          className={`absolute inset-0 transition-opacity duration-1000 hero-slide-${i}`}
           style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
         >
           <Image
@@ -100,28 +176,28 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
       {/* Content */}
       <div className="absolute inset-0 z-10 flex items-center">
         <div className="max-w-7xl mx-auto px-6 sm:px-10 w-full">
-          <div className="max-w-xl animate-fade-in-up">
+          <div className="max-w-xl hero-text-block">
             {/* Gold accent line */}
             <div
-              className="w-16 h-0.5 mb-5"
+              className="w-16 h-0.5 mb-5 hero-accent-line"
               style={{ background: "#c9a84c" }}
             />
 
             {slide.title && (
               <h1
-                className="font-serif text-4xl md:text-6xl font-bold text-white mb-3 leading-tight"
+                className="font-serif text-4xl md:text-6xl font-bold text-white mb-3 leading-tight hero-title"
               >
                 {slide.title}
               </h1>
             )}
 
             {slide.subtitle && (
-              <p className="text-lg md:text-xl text-gray-200 mb-7">
+              <p className="text-lg md:text-xl text-gray-200 mb-7 hero-subtitle">
                 {slide.subtitle}
               </p>
             )}
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 hero-actions">
               {slide.ctaLink && slide.ctaText && (
                 <Link
                   href={slide.ctaLink}

@@ -1,4 +1,12 @@
+"use client";
+
+import { useRef } from "react";
 import Link from "next/link";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 interface BudgetRange {
   id: string;
@@ -23,8 +31,32 @@ const GRADIENTS = [
 const TEXT_COLORS = ["#3d0b15", "#3d0b15", "#3d0b15", "#3d0b15", "#e6c97a"];
 
 export default function ShopByBudget({ ranges }: ShopByBudgetProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const cards = containerRef.current?.querySelectorAll(".budget-card");
+    if (!cards) return;
+
+    gsap.fromTo(
+      cards,
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.08,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+      }
+    );
+  }, { scope: containerRef });
+
   return (
-    <section className="py-16 px-4" style={{ background: "#f5ede0" }}>
+    <section ref={containerRef} className="py-16 px-4" style={{ background: "#f5ede0" }}>
       <div className="max-w-7xl mx-auto">
         <div className="section-header">
           <h2>Shop by Budget</h2>
@@ -45,7 +77,7 @@ export default function ShopByBudget({ ranges }: ShopByBudgetProps) {
               <Link
                 key={range.id}
                 href={href}
-                className="group rounded-xl p-5 flex flex-col justify-between h-28 sm:h-32 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                className="group budget-card rounded-xl p-5 flex flex-col justify-between h-28 sm:h-32 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 style={{
                   background: GRADIENTS[i % GRADIENTS.length],
                   border: "1px solid rgba(201,168,76,0.2)",

@@ -191,11 +191,11 @@ h6 {
 }
 
 .product-card:hover .product-image {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .product-image {
-  transition: transform 0.5s ease;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────── */
@@ -516,3 +516,125 @@ h6 {
 .rich-text strong {
   color: #3d0b15;
 }
+
+/* ── Luxury UI Extensions ──────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 1.5px;
+  background: var(--color-gold-500);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.product-card-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  pointer-events: none;
+}
+
+.product-card:hover .product-card-glow {
+  border-color: rgba(201, 168, 76, 0.25);
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.08);
+}
+
+.hero-title-wrapper {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.hero-title-word {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Accordion Component */
+.accordion-wrapper {
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.accordion-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1.25rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #3d0b15;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+.accordion-trigger:focus-visible {
+  color: var(--color-gold-600);
+}
+
+.accordion-content {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.accordion-content-inner {
+  padding: 0 0 1.25rem;
+  color: #6b4a52;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.accordion-icon {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--color-gold-500);
+}
+
+.accordion-trigger[aria-expanded="true"] .accordion-icon {
+  transform: rotate(180deg);
+}
+
+/* Sticky layout support */
+@media (min-width: 1024px) {
+  .sticky-sidebar-desktop {
+    position: sticky;
+    top: 7rem;
+    height: fit-content;
+  }
+}
+
+/* Mega Menu Dropdown Animation */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.animate-dropdown {
+  animation: dropdownFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+

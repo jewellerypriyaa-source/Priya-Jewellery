@@ -64,6 +64,7 @@ export default function ProductCard({ product, onAnalyticsClick }: ProductCardPr
   return (
     <>
       <div className="product-card group relative">
+        <div className="product-card-glow" />
         {/* Image Container */}
         <Link href={`/product/${product.slug}`} id={`product-card-${product.slug}`}>
           <div className="relative h-56 sm:h-64 overflow-hidden">
@@ -115,7 +116,7 @@ export default function ProductCard({ product, onAnalyticsClick }: ProductCardPr
             </div>
 
             {/* Hover Actions */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-300 ease-out">
               {/* Quick View */}
               <button
                 onClick={(e) => {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Search,
   Heart,
@@ -50,7 +50,11 @@ export default function Header({
   const [isScrolled, setIsScrolled] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
   const wishlistCount = useWishlistStore((s) => s.items.length);
+
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !isScrolled;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -102,18 +106,22 @@ export default function Header({
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-md"
-          : "bg-cream-100"
+      className={`z-50 transition-all duration-500 ${
+        isTransparent
+          ? "absolute top-0 left-0 right-0 bg-transparent text-white border-transparent"
+          : "sticky top-0 bg-white/80 backdrop-blur-xl shadow-sm text-gray-900 border-b border-cream-200/40"
       }`}
-      style={{ borderBottom: "1px solid rgba(201,168,76,0.2)" }}
+      style={{
+        borderBottom: isTransparent ? "1px solid transparent" : "1px solid rgba(201,168,76,0.15)",
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-2 text-maroon-700 hover:text-gold-500 transition-colors"
+            className={`md:hidden p-2 transition-colors ${
+              isTransparent ? "text-white hover:text-gold-300" : "text-maroon-700 hover:text-gold-500"
+            }`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             id="mobile-menu-toggle"
@@ -128,14 +136,14 @@ export default function Header({
             ) : (
               <div className="text-center">
                 <div
-                  className="font-serif text-xl md:text-2xl font-bold leading-tight"
-                  style={{ color: "#6b1a2a" }}
+                  className="font-serif text-xl md:text-2xl font-bold leading-tight transition-colors duration-500"
+                  style={{ color: isTransparent ? "#fff" : "#6b1a2a" }}
                 >
                   {storeName}
                 </div>
                 <div
-                  className="text-xs tracking-[0.3em] uppercase"
-                  style={{ color: "#c9a84c" }}
+                  className="text-xs tracking-[0.3em] uppercase transition-colors duration-500"
+                  style={{ color: isTransparent ? "#e6c97a" : "#c9a84c" }}
                 >
                   Fine Jewellery
                 </div>
@@ -152,7 +160,9 @@ export default function Header({
               onMouseLeave={() => setShopMenuOpen(false)}
             >
               <button
-                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-maroon-600 transition-colors"
+                className={`nav-link flex items-center gap-1 text-sm font-medium transition-colors ${
+                  isTransparent ? "text-white/90 hover:text-gold-300" : "text-gray-700 hover:text-maroon-600"
+                }`}
                 id="shop-menu-trigger"
               >
                 Shop <ChevronDown size={14} />
@@ -161,7 +171,7 @@ export default function Header({
               {/* Mega Menu */}
               {shopMenuOpen && (
                 <div
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white rounded-xl shadow-xl border border-cream-200 p-6 grid grid-cols-2 gap-6 min-w-[480px]"
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white rounded-xl shadow-xl border border-cream-200 p-6 grid grid-cols-2 gap-6 min-w-[480px] animate-dropdown origin-top"
                   style={{ borderColor: "rgba(201,168,76,0.2)" }}
                 >
                   {/* Shop by Category */}
@@ -231,25 +241,33 @@ export default function Header({
 
             <Link
               href="/shop?sort=newest"
-              className="text-sm font-medium text-gray-700 hover:text-maroon-600 transition-colors"
+              className={`nav-link text-sm font-medium transition-colors ${
+                isTransparent ? "text-white/90 hover:text-gold-300" : "text-gray-700 hover:text-maroon-600"
+              }`}
             >
               New Arrivals
             </Link>
             <Link
               href="/shop?bestseller=true"
-              className="text-sm font-medium text-gray-700 hover:text-maroon-600 transition-colors"
+              className={`nav-link text-sm font-medium transition-colors ${
+                isTransparent ? "text-white/90 hover:text-gold-300" : "text-gray-700 hover:text-maroon-600"
+              }`}
             >
               Bestsellers
             </Link>
             <Link
               href="/about-us"
-              className="text-sm font-medium text-gray-700 hover:text-maroon-600 transition-colors"
+              className={`nav-link text-sm font-medium transition-colors ${
+                isTransparent ? "text-white/90 hover:text-gold-300" : "text-gray-700 hover:text-maroon-600"
+              }`}
             >
               About
             </Link>
             <Link
               href="/contact-us"
-              className="text-sm font-medium text-gray-700 hover:text-maroon-600 transition-colors"
+              className={`nav-link text-sm font-medium transition-colors ${
+                isTransparent ? "text-white/90 hover:text-gold-300" : "text-gray-700 hover:text-maroon-600"
+              }`}
             >
               Contact
             </Link>
@@ -261,7 +279,9 @@ export default function Header({
             <div ref={searchRef} className="relative">
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="p-2 text-gray-600 hover:text-maroon-600 transition-colors"
+                className={`p-2 transition-colors ${
+                  isTransparent ? "text-white/95 hover:text-gold-300" : "text-gray-600 hover:text-maroon-600"
+                }`}
                 aria-label="Search"
                 id="header-search-toggle"
               >
@@ -269,7 +289,7 @@ export default function Header({
               </button>
 
               {searchOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 md:w-96 bg-white rounded-xl shadow-xl border p-3 z-50"
+                <div className="absolute right-0 top-full mt-2 w-72 md:w-96 bg-white rounded-xl shadow-xl border p-3 z-50 text-gray-900"
                   style={{ borderColor: "rgba(201,168,76,0.2)" }}
                 >
                   <form onSubmit={handleSearch} className="flex gap-2">
@@ -315,7 +335,9 @@ export default function Header({
             {/* Wishlist */}
             <Link
               href="/wishlist"
-              className="relative p-2 text-gray-600 hover:text-maroon-600 transition-colors"
+              className={`relative p-2 transition-colors ${
+                isTransparent ? "text-white/95 hover:text-gold-300" : "text-gray-600 hover:text-maroon-600"
+              }`}
               aria-label={`Wishlist (${wishlistCount} items)`}
               id="header-wishlist"
             >
