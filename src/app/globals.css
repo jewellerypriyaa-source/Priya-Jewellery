@@ -472,7 +472,7 @@ h6 {
 /* ── Mobile Responsive Helpers ────────────────────────────────── */
 @media (max-width: 768px) {
   .whatsapp-fab {
-    bottom: 20px;
+    bottom: 80px;
     right: 20px;
     width: 52px;
     height: 52px;
