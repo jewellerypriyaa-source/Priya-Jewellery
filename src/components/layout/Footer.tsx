@@ -117,7 +117,7 @@ export default function Footer({
   return (
     <footer className="bg-maroon-900 text-white mt-16" style={{ background: "#1a0a0e" }}>
       {/* Top Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-14 pb-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
         {/* Brand */}
         <div>
           <div className="font-serif text-2xl font-bold mb-1" style={{ color: "#e6c97a" }}>
@@ -176,6 +176,31 @@ export default function Footer({
                   href={link.href}
                   className="text-sm text-gray-400 hover:text-gold-300 transition-colors"
                   style={{ "--hover-color": "#e6c97a" } as React.CSSProperties}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Jewellery Journal */}
+        <div>
+          <h3 className="font-serif text-lg font-semibold mb-4" style={{ color: "#e6c97a" }}>
+            Jewellery Journal
+          </h3>
+          <ul className="space-y-2.5">
+            {[
+              { href: "/blog/ultimate-gold-plated-guide", label: "1.5g Gold Plating Guide" },
+              { href: "/blog/anti-tarnish-explained", label: "Anti-Tarnish Daily Wear" },
+              { href: "/blog/kundan-polki-care", label: "Kundan & Polki Care" },
+              { href: "/blog/bridal-jewellery-trends", label: "Bridal Jewellery Trends" },
+              { href: "/blog", label: "View All Articles →" },
+            ].map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="text-sm text-gray-400 hover:text-gold-300 transition-colors"
                 >
                   {link.label}
                 </Link>
