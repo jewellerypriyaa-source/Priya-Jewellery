@@ -28,7 +28,7 @@ export default function AdminLayoutClient({
       {/* MOBILE HEADER BAR */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#1a0a0e] flex items-center justify-between px-4 z-40 border-b border-[#c9a84c]/20">
         <div className="flex flex-col">
-          <span className="font-serif font-bold text-white text-base leading-none">Priyaa Jewellery</span>
+          <span className="font-serif font-bold text-white text-base leading-none">Priya Jewellery</span>
           <span className="text-[10px] text-[#c9a84c] tracking-wider mt-0.5 uppercase">Admin Panel</span>
         </div>
         <button

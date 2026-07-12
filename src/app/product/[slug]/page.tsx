@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       product.metaDesc ??
       product.shortDesc ??
-      `Buy ${product.name} at Priyaa Jewellery. Order on WhatsApp.`,
+      `Buy ${product.name} at Priya Jewellery. Order on WhatsApp.`,
     openGraph: {
       title: product.metaTitle ?? product.name,
       description: product.metaDesc ?? product.shortDesc ?? undefined,

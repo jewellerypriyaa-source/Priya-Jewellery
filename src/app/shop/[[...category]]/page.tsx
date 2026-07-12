@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (cat) {
       return {
         title: `${cat.name} Jewellery`,
-        description: cat.description ?? `Shop ${cat.name} at Priyaa Jewellery.`,
+        description: cat.description ?? `Shop ${cat.name} at Priya Jewellery.`,
       };
     }
   }

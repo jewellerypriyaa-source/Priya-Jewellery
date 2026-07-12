@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
             className="font-serif text-2xl font-bold mb-1"
             style={{ color: "#6b1a2a" }}
           >
-            Priyaa Jewellery
+            Priya Jewellery
           </div>
           <div
             className="text-xs tracking-[0.3em] uppercase"

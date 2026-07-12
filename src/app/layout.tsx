@@ -12,8 +12,8 @@ import WhatsAppFAB from "@/components/layout/WhatsAppFAB";
 
 export const metadata: Metadata = {
   title: {
-    default: "Priyaa Jewellery — Handcrafted Fine Jewellery",
-    template: "%s | Priyaa Jewellery",
+    default: "Priya Jewellery — Handcrafted Fine Jewellery",
+    template: "%s | Priya Jewellery",
   },
   description:
     "Discover handcrafted gold and silver jewellery — necklaces, earrings, bangles, rings, chokers and bridal sets. Order easily on WhatsApp.",
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "Priyaa Jewellery",
-    title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
+    siteName: "Priya Jewellery",
+    title: "Priya Jewellery — Handcrafted Fine Jewellery",
     description:
       "Beautiful handcrafted jewellery. Order easily on WhatsApp — we reply within minutes!",
   },

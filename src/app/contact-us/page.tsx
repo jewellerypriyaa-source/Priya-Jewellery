@@ -1,10 +1,10 @@
-﻿import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import ContactForm from "./ContactForm";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export const metadata = {
-  title: "Contact Us — Priyaa Jewellery",
-  description: "Get in touch with Priyaa Jewellery. Visit our boutique in Howrah or contact us via WhatsApp, call, or email.",
+  title: "Contact Us — Priya Jewellery",
+  description: "Get in touch with Priya Jewellery. Visit our boutique in Howrah or contact us via WhatsApp, call, or email.",
 };
 
 export default async function ContactUsPage() {

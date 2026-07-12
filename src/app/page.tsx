@@ -13,11 +13,11 @@ import SaleCountdown from "@/components/home/SaleCountdown";
 import InstagramGallery from "@/components/home/InstagramGallery";
 
 export const metadata: Metadata = {
-  title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
+  title: "Priya Jewellery — Handcrafted Fine Jewellery",
   description:
     "Discover beautiful handcrafted jewellery — Gold Plated, Anti Tarnish, American Diamond, Polki Kundan, Bridal, German Silver & Oxidised collections. Order easily on WhatsApp. Free shipping on orders above ₹1499.",
   openGraph: {
-    title: "Priyaa Jewellery — Handcrafted Fine Jewellery",
+    title: "Priya Jewellery — Handcrafted Fine Jewellery",
     description:
       "Beautiful handcrafted jewellery. Order on WhatsApp — we reply within minutes!",
   },

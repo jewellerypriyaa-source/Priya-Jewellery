@@ -38,7 +38,7 @@ const BUDGET_RANGES = [
 export default function Header({
   categories = [],
   logoUrl,
-  storeName = "Priyaa Jewellery",
+  storeName = "Priya Jewellery",
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopMenuOpen, setShopMenuOpen] = useState(false);

@@ -125,7 +125,7 @@ export default function HeroBanner({ slides }: HeroBannerProps) {
       >
         <div className="text-center text-white px-4">
           <h1 className="font-serif text-5xl md:text-7xl font-bold mb-4" style={{ color: "#e6c97a" }}>
-            Priyaa Jewellery
+            Priya Jewellery
           </h1>
           <p className="text-xl text-gray-300 mb-8">
             Handcrafted jewellery for every occasion

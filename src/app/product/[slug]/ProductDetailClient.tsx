@@ -603,7 +603,7 @@ export default function ProductDetailClient({
               }}
             >
               <div className="accordion-content-inner text-sm md:text-base">
-                <p className="mb-2">To preserve the brilliant lustre of your Priyaa Fine Jewellery:</p>
+                <p className="mb-2">To preserve the brilliant lustre of your Priya Fine Jewellery:</p>
                 <ul className="list-disc pl-5 space-y-1.5 mt-2">
                   <li>Avoid direct contact with water, sweat, perfumes, and hairsprays.</li>
                   <li>Remove jewellery before washing hands, swimming, or exercising.</li>

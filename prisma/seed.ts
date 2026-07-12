@@ -187,7 +187,7 @@ async function main() {
           slug: subcat.slug,
           categoryId: catByName[subcat.group].id,
           displayOrder: subcat.displayOrder,
-          description: `${subcat.group} — ${subcat.name} collection at Priyaa Jewellery.`,
+          description: `${subcat.group} — ${subcat.name} collection at Priya Jewellery.`,
           isActive: true,
         },
       })

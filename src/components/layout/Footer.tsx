@@ -76,7 +76,7 @@ interface FooterProps {
 }
 
 export default function Footer({
-  storeName = "Priyaa Jewellery",
+  storeName = "Priya Jewellery",
   phone = "+91 7367997766",
   email = "info@priyajewellery.com",
   address = "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",

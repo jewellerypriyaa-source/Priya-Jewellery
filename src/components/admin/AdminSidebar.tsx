@@ -51,7 +51,7 @@ export default function AdminSidebar({ adminName }: AdminSidebarProps) {
           className="font-serif text-lg font-bold"
           style={{ color: "#e6c97a" }}
         >
-          Priyaa Jewellery
+          Priya Jewellery
         </div>
         <div className="text-xs mt-0.5" style={{ color: "#c9a84c" }}>
           Admin Panel

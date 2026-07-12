@@ -30,7 +30,7 @@ async function main() {
         name: g.name,
         slug: g.slug,
         displayOrder: g.displayOrder,
-        description: `${g.name} jewellery collection at Priyaa Jewellery.`,
+        description: `${g.name} jewellery collection at Priya Jewellery.`,
         isActive: true,
       },
     });
