@@ -20,7 +20,7 @@ export default function AnnouncementBar({
 
   return (
     <div
-      className="relative text-white text-sm font-medium py-2 px-4 overflow-hidden"
+      className="announcement-bar relative text-white text-sm font-medium py-2 px-4 overflow-hidden"
       style={{ background: "linear-gradient(90deg, #3d0b15, #6b1a2a, #3d0b15)" }}
       role="banner"
     >
