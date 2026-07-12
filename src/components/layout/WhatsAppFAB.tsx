@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { cleanWhatsAppNumber } from "@/lib/whatsapp";
 
 interface WhatsAppFABProps {
   whatsappNumber?: string;
@@ -11,7 +12,7 @@ export default function WhatsAppFAB({
 }: WhatsAppFABProps) {
   return (
     <a
-      href={`https://wa.me/${whatsappNumber}`}
+      href={`https://wa.me/${cleanWhatsAppNumber(whatsappNumber)}`}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-fab"

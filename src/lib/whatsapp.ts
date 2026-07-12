@@ -24,6 +24,15 @@ interface BuildOrderMessageOptions {
   template?: string;
 }
 
+export function cleanWhatsAppNumber(num?: string | null): string {
+  const base = num || "917367997766";
+  let cleaned = base.replace(/\D/g, "");
+  if (cleaned.length === 10) {
+    cleaned = "91" + cleaned;
+  }
+  return cleaned;
+}
+
 /**
  * Build a WhatsApp URL for ordering a single product
  */
@@ -43,7 +52,7 @@ export function buildOrderUrl(opts: BuildOrderMessageOptions): string {
     .replace("{variant}", variant ?? "N/A")
     .replace("{url}", productUrl);
 
-  return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${cleanWhatsAppNumber(waNumber)}?text=${encodeURIComponent(message)}`;
 }
 
 interface WishlistItem {
@@ -69,7 +78,7 @@ export function buildWishlistUrl(
 
   const message = `Hi Priya Jewellery! I'm interested in ordering these items from my wishlist:\n\n${lines}\n\nCould you please confirm availability and delivery details?`;
 
-  return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${cleanWhatsAppNumber(waNumber)}?text=${encodeURIComponent(message)}`;
 }
 
 /**
@@ -81,7 +90,7 @@ export function buildNotifyUrl(
   waNumber: string = DEFAULT_WA_NUMBER
 ): string {
   const message = `Hi Priya Jewellery! I'd like to be notified when "${productName}" is back in stock.\n🔗 ${productUrl}`;
-  return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${cleanWhatsAppNumber(waNumber)}?text=${encodeURIComponent(message)}`;
 }
 
 /**
@@ -90,5 +99,5 @@ export function buildNotifyUrl(
 export function buildDirectChatUrl(
   waNumber: string = DEFAULT_WA_NUMBER
 ): string {
-  return `https://wa.me/${waNumber}`;
+  return `https://wa.me/${cleanWhatsAppNumber(waNumber)}`;
 }

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import prisma from "@/lib/prisma";
+import { cleanWhatsAppNumber } from "@/lib/whatsapp";
 
 // Always fetch live data from Supabase — never serve a stale build-time snapshot
 export const dynamic = "force-dynamic";
@@ -248,7 +249,7 @@ export default async function HomePage() {
             over WhatsApp.
           </p>
           <a
-            href={`https://wa.me/${settings?.whatsappNumber ?? "917367997766"}`}
+            href={`https://wa.me/${cleanWhatsAppNumber(settings?.whatsappNumber)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-whatsapp text-base px-8 py-3"

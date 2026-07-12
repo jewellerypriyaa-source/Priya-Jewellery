@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
+import { cleanWhatsAppNumber } from "@/lib/whatsapp";
 
 interface AnnouncementBarProps {
   text?: string;
@@ -56,7 +57,7 @@ export default function AnnouncementBar({
 
         {/* WhatsApp link */}
         <a
-          href={`https://wa.me/${whatsappNumber}`}
+          href={`https://wa.me/${cleanWhatsAppNumber(whatsappNumber)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="hidden sm:flex items-center gap-1.5 bg-green-500 hover:bg-green-400 text-white rounded-full px-3 py-0.5 text-xs font-semibold transition-colors whitespace-nowrap"

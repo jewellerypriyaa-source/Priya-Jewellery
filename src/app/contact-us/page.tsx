@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import ContactForm from "./ContactForm";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { cleanWhatsAppNumber } from "@/lib/whatsapp";
 
 export const metadata = {
   title: "Contact Us — Priya Jewellery",
@@ -62,7 +63,7 @@ export default async function ContactUsPage() {
                   <h3 className="font-semibold text-sm text-gray-900 mb-1">Phone & Support</h3>
                   <p className="text-sm text-gray-600 mb-1">{phone}</p>
                   <a 
-                    href={`https://wa.me/${whatsappNumber}`}
+                    href={`https://wa.me/${cleanWhatsAppNumber(whatsappNumber)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
