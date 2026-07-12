@@ -1,4 +1,4 @@
-﻿import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { Ruler, Sparkles, AlertCircle } from "lucide-react";
 
 export const metadata = {
@@ -11,6 +11,7 @@ export default async function SizeChartPage() {
   const storeName = settings?.storeName || "Priya Jewellery";
 
   const ringSizes = [
+    { size: "8", diameter: "15.3 mm", circumference: "48.0 mm" },
     { size: "10", diameter: "15.9 mm", circumference: "50.0 mm" },
     { size: "12", diameter: "16.5 mm", circumference: "51.8 mm" },
     { size: "14", diameter: "17.2 mm", circumference: "54.0 mm" },
@@ -20,6 +21,7 @@ export default async function SizeChartPage() {
   ];
 
   const bangleSizes = [
+    { size: "2.2", diameter: '2.12" (54.0 mm)', circumference: '6.67" (169.5 mm)' },
     { size: "2.4", diameter: '2.25" (57.2 mm)', circumference: '7.06" (179.4 mm)' },
     { size: "2.6", diameter: '2.37" (60.3 mm)', circumference: '7.46" (189.6 mm)' },
     { size: "2.8", diameter: '2.50" (63.5 mm)', circumference: '7.85" (199.4 mm)' },
@@ -125,7 +127,7 @@ export default async function SizeChartPage() {
                 <li>Bring your thumb and little finger together closely as if sliding a bangle on.</li>
                 <li>Wrap a string or measuring tape around the widest part of your hand (the knuckles).</li>
                 <li>Mark the overlapping point and measure the length in inches to find your hand's <strong>Circumference</strong>.</li>
-                <li>Compare this knuckle circumference to find the correct bangle size: 7.0" is size 2.4, 7.5" is size 2.6, 7.9" is size 2.8, and 8.25" is size 2.10.</li>
+                <li>Compare this knuckle circumference to find the correct bangle size: 6.67" is size 2.2, 7.0" is size 2.4, 7.5" is size 2.6, 7.9" is size 2.8, and 8.25" is size 2.10.</li>
               </ol>
             </div>
           </div>

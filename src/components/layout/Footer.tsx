@@ -80,8 +80,8 @@ export default function Footer({
   storeName = "Priya Jewellery",
   phone = "+91 7367997766",
   email = "info@priyajewellery.com",
-  address = "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",
-  businessHours = "Mon–Sat: 10am – 7pm",
+  address = "Shop no 137 First floor, SALKIA AC MARKET, 95/A, Aurobindo Road, Infront of Baro Sitla Mata Mandir, Salkia, Howrah, West Bengal 711106",
+  businessHours = "",
   instagramUrl = "https://www.instagram.com/_priyaa_jewels_",
   facebookUrl = "https://www.facebook.com/share/1YcKK2fWRA/",
   youtubeUrl = "https://www.youtube.com/@PRIYAJewellery",
@@ -247,10 +247,12 @@ export default function Footer({
                 <span>{address}</span>
               </li>
             )}
-            <li className="flex items-start gap-2 text-sm text-gray-400">
-              <Clock size={14} className="mt-0.5 flex-shrink-0" style={{ color: "#c9a84c" }} />
-              <span>{businessHours}</span>
-            </li>
+            {businessHours && (
+              <li className="flex items-start gap-2 text-sm text-gray-400">
+                <Clock size={14} className="mt-0.5 flex-shrink-0" style={{ color: "#c9a84c" }} />
+                <span>{businessHours}</span>
+              </li>
+            )}
           </ul>
         </div>
 

@@ -11,7 +11,7 @@ interface AnnouncementBarProps {
 }
 
 export default function AnnouncementBar({
-  text = "✨ Free shipping in-city on orders above ₹1499 | New Arrivals Every Week",
+  text = "✨ Free shipping in-city on orders above ₹499 | New Arrivals Every Week",
   phone = "+91 7367997766",
   whatsappNumber = "917367997766",
 }: AnnouncementBarProps) {

@@ -13,8 +13,8 @@ export default async function ContactUsPage() {
 
   const phone = settings?.phone || "+91 7367997766";
   const email = settings?.email || "info@priyajewellery.com";
-  const address = settings?.address || "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106";
-  const businessHours = settings?.businessHours || "Mon–Sat: 10am – 7pm";
+  const address = settings?.address || "Shop no 137 First floor, SALKIA AC MARKET, 95/A, Aurobindo Road, Infront of Baro Sitla Mata Mandir, Salkia, Howrah, West Bengal 711106";
+  const businessHours = settings?.businessHours || "";
   const whatsappNumber = settings?.whatsappNumber || "917367997766";
 
   return (
@@ -85,16 +85,18 @@ export default async function ContactUsPage() {
               </div>
 
               {/* Hours */}
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center flex-shrink-0 text-gold-600">
-                  <Clock size={18} />
+              {businessHours && (
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-cream-100 flex items-center justify-center flex-shrink-0 text-gold-600">
+                    <Clock size={18} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm text-gray-900 mb-1">Boutique Hours</h3>
+                    <p className="text-sm text-gray-600 mb-1">{businessHours}</p>
+                    <p className="text-[11px] text-gray-400">Sundays Closed</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm text-gray-900 mb-1">Boutique Hours</h3>
-                  <p className="text-sm text-gray-600 mb-1">{businessHours}</p>
-                  <p className="text-[11px] text-gray-400">Sundays Closed</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 

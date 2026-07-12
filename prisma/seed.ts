@@ -97,6 +97,9 @@ async function main() {
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
       logoUrl: "/logo.jpg",
+      address: "Shop no 137 First floor, SALKIA AC MARKET, 95/A, Aurobindo Road, Infront of Baro Sitla Mata Mandir, Salkia, Howrah, West Bengal 711106",
+      announcementText: "✨ Free shipping in-city on orders above Rs.499 | New Arrivals Every Week | Call: +91 7367997766",
+      businessHours: "",
     },
     create: {
       id: "main",
@@ -105,11 +108,11 @@ async function main() {
       whatsappTemplate:
         "Hi Priya Jewellery! I am interested in:\n🛍️ {product_name}\n💰 Rs.{price}\n📏 {variant}\n🔗 {url}\nPlease confirm availability and delivery details.",
       announcementText:
-        "✨ Free shipping in-city on orders above Rs.1499 | New Arrivals Every Week | Call: +91 7367997766",
+        "✨ Free shipping in-city on orders above Rs.499 | New Arrivals Every Week | Call: +91 7367997766",
       phone: "+91 7367997766",
       email: "info@priyajewellery.com",
-      address: "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",
-      businessHours: "Mon–Sat: 10am – 7pm",
+      address: "Shop no 137 First floor, SALKIA AC MARKET, 95/A, Aurobindo Road, Infront of Baro Sitla Mata Mandir, Salkia, Howrah, West Bengal 711106",
+      businessHours: "",
       instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
