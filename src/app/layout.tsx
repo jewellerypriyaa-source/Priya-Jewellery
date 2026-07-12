@@ -98,7 +98,7 @@ export default async function RootLayout({
         />
 
         {/* Main Content */}
-        <main>{children}</main>
+        <main className="pb-20 md:pb-0">{children}</main>
 
         {/* Footer */}
         <Footer
