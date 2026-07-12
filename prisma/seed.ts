@@ -93,7 +93,7 @@ async function main() {
   await prisma.settings.upsert({
     where: { id: "main" },
     update: {
-      instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
+      instagramUrl: "https://www.instagram.com/priyaa___jewellery",
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
       logoUrl: "/logo.jpg",
@@ -113,7 +113,7 @@ async function main() {
       email: "info@priyajewellery.com",
       address: "Shop no 137 First floor, SALKIA AC MARKET, 95/A, Aurobindo Road, Infront of Baro Sitla Mata Mandir, Salkia, Howrah, West Bengal 711106",
       businessHours: "",
-      instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
+      instagramUrl: "https://www.instagram.com/priyaa___jewellery",
       facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
       youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
       logoUrl: "/logo.jpg",
