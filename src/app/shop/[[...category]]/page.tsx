@@ -62,7 +62,7 @@ export default async function ShopPage({ params, searchParams }: PageProps) {
     <div className="min-h-screen" style={{ background: "#fbf6f0" }}>
       <Suspense>
         <ShopPageClient
-          key={`${categorySlug ?? ""}-${sp.group ?? ""}`}
+          key={`${categorySlug ?? ""}-${sp.group ?? ""}-${sp.sort ?? ""}-${sp.bestseller ?? ""}-${sp.minPrice ?? ""}-${sp.maxPrice ?? ""}-${sp.page ?? ""}-${sp.q ?? ""}`}
           categorySlug={categorySlug}
           categoryInfo={categoryInfo}
           allCategories={allCategories}
