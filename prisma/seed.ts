@@ -92,7 +92,11 @@ async function main() {
   // ── Settings (singleton) ────────────────────────────────────────────
   await prisma.settings.upsert({
     where: { id: "main" },
-    update: {},
+    update: {
+      instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
+      facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
+      youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
+    },
     create: {
       id: "main",
       storeName: "Priya Jewellery",
@@ -105,6 +109,9 @@ async function main() {
       email: "info@priyajewellery.com",
       address: "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",
       businessHours: "Mon–Sat: 10am – 7pm",
+      instagramUrl: "https://www.instagram.com/_priyaa_jewels_",
+      facebookUrl: "https://www.facebook.com/share/1YcKK2fWRA/",
+      youtubeUrl: "https://www.youtube.com/@PRIYAJewellery",
     },
   });
   console.log("✅ Settings upserted");

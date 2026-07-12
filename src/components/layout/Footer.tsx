@@ -82,9 +82,9 @@ export default function Footer({
   email = "info@priyajewellery.com",
   address = "Shop no 137 First floor, AC MARKET, Babudanga, Golabari, AC MARKET, Salkia, Howrah, West Bengal 711106",
   businessHours = "Mon–Sat: 10am – 7pm",
-  instagramUrl = "#",
-  facebookUrl = "#",
-  youtubeUrl = "#",
+  instagramUrl = "https://www.instagram.com/_priyaa_jewels_",
+  facebookUrl = "https://www.facebook.com/share/1YcKK2fWRA/",
+  youtubeUrl = "https://www.youtube.com/@PRIYAJewellery",
   whatsappNumber = "917367997766",
 }: FooterProps) {
   const [name, setName] = useState("");
