@@ -9,6 +9,7 @@ import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFAB from "@/components/layout/WhatsAppFAB";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 export const metadata: Metadata = {
   title: {
@@ -115,6 +116,9 @@ export default async function RootLayout({
 
         {/* Floating WhatsApp Button */}
         <WhatsAppFAB whatsappNumber={settings?.whatsappNumber} />
+
+        {/* Mobile Bottom Navigation Bar */}
+        <MobileBottomNav />
       </body>
     </html>
   );
