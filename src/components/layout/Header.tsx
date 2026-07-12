@@ -130,25 +130,28 @@ export default function Header({
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0" id="header-logo">
-            {logoUrl ? (
-              <Image src={logoUrl} alt={storeName} width={140} height={48} className="object-contain h-10 w-auto" />
-            ) : (
-              <div className="text-center">
-                <div
-                  className="font-serif text-xl md:text-2xl font-bold leading-tight transition-colors duration-500"
-                  style={{ color: isTransparent ? "#fff" : "#6b1a2a" }}
-                >
-                  {storeName}
-                </div>
-                <div
-                  className="text-xs tracking-[0.3em] uppercase transition-colors duration-500"
-                  style={{ color: isTransparent ? "#e6c97a" : "#c9a84c" }}
-                >
-                  Fine Jewellery
-                </div>
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" id="header-logo">
+            <Image 
+              src="/logo-icon.jpg" 
+              alt="Priya Jewellery Logo" 
+              width={40} 
+              height={40} 
+              className="object-contain h-10 w-10 rounded-lg shadow-sm border border-cream-200/20" 
+            />
+            <div className="text-left flex flex-col justify-center">
+              <div
+                className="font-serif text-lg md:text-xl font-bold leading-tight transition-colors duration-500"
+                style={{ color: isTransparent ? "#fff" : "#6b1a2a" }}
+              >
+                {storeName}
               </div>
-            )}
+              <div
+                className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase transition-colors duration-500 font-light"
+                style={{ color: isTransparent ? "#e6c97a" : "#c9a84c" }}
+              >
+                Fine Jewellery
+              </div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
